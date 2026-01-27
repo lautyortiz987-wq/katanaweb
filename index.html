@@ -10,28 +10,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,900&display=swap');
         
         :root {
-            --vintage-paper: #ffffff;
             --rose-color: #fb7185;
+            --cream: #ffffff;
         }
 
         body {
-            background-color: var(--vintage-paper);
+            background-color: var(--cream);
             font-family: 'Libre Baskerville', serif;
             color: #1a1a1a;
-            overflow-x: hidden;
             margin: 0;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Contenedor de pétalos - Siempre visible */
+        /* CAPA DE PÉTALOS (Siempre visible) */
         #global-petals {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             pointer-events: none;
-            z-index: 5; /* Fondo, pero visible sobre el blanco */
+            z-index: 100;
             overflow: hidden;
         }
 
@@ -39,304 +35,405 @@
             position: absolute;
             background: var(--rose-color);
             border-radius: 150% 0 150% 50%;
-            opacity: 0.6;
+            opacity: 0.2;
             animation: fall linear infinite;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
         }
 
         @keyframes fall {
-            0% { 
-                transform: translateY(-10vh) rotate(0deg) translateX(0); 
-                opacity: 0; 
-            }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { 
-                transform: translateY(110vh) rotate(360deg) translateX(50px); 
-                opacity: 0; 
-            }
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
         }
 
-        /* Pantalla de Inicio */
-        #hero-screen {
-            background-color: transparent; /* Para ver pétalos detrás */
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 200;
+        /* ANIMACIÓN DE LETRAS (HERO) */
+        .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            filter: blur(10px);
+            animation: revealChar 0.8s forwards;
         }
 
-        /* Fondo blanco para el inicio que se desliza */
-        #hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: -1;
-            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+        @keyframes revealChar {
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
 
         .hero-title {
             font-family: 'Playfair Display', serif;
             font-weight: 900;
             letter-spacing: -0.02em;
-            color: #1a1a1a;
         }
 
-        /* Tarjetas del Calendario */
-        .talavera-card {
-            background: rgba(255, 255, 255, 0.95);
-            position: relative;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            opacity: 0;
-            transform: translateY(40px);
-            border-radius: 2px;
-            z-index: 20;
+        /* PANEL DE ADMINISTRACIÓN */
+        #admin-panel {
+            position: fixed;
+            inset: 0;
+            background: #fdfdfc;
+            z-index: 2000;
+            display: none;
+            grid-template-columns: 350px 1fr;
         }
 
-        .card-inner-border {
-            border: 1px solid #f3f4f6;
-            margin: 4px;
-            padding: 24px;
-            border-radius: 1px;
-            height: calc(100% - 8px);
+        .admin-sidebar {
+            background: white;
+            border-right: 1px solid #eee;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.02);
         }
 
-        .talavera-card.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .admin-main {
+            padding: 4rem;
+            overflow-y: auto;
+            background: #f9f8f7;
         }
 
-        .talavera-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-            border-color: var(--rose-color);
-        }
-
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            height: 320px;
-            background: #fdfaf6;
-            border: 1px solid #eeeeee;
-        }
-
-        .image-container img {
+        .drop-zone {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: sepia(0.1) contrast(1.05);
-            transition: transform 1.5s ease;
+            aspect-ratio: 16/9;
+            background: #fff;
+            border: 1px dashed #ddd;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
         }
 
-        .talavera-card:hover img {
-            transform: scale(1.08);
-        }
+        .drop-zone:hover { border-color: var(--rose-color); background: #fffafa; }
 
-        .loader-ia {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid var(--rose-color);
+        /* BOTÓN ADMIN FLOTANTE */
+        .admin-toggle {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 1001;
+            background: white;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .admin-toggle:hover { transform: rotate(90deg) scale(1.1); }
+
+        /* GALERÍA PÚBLICA */
+        .public-card {
+            background: white;
+            padding: 3rem;
+            border: 1px solid #f5f5f5;
+            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .divider {
-            height: 1px;
-            width: 40px;
-            background: #d1d5db;
-            margin: 20px auto;
-            transition: all 0.4s ease;
-        }
-
-        .talavera-card:hover .divider {
-            width: 80px;
-            background: var(--rose-color);
+        .public-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.06);
         }
 
         .hidden { display: none !important; }
-        .slide-up-content { transform: translateY(-100vh); opacity: 0; pointer-events: none; }
+        .fade-out { opacity: 0; pointer-events: none; transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1); }
+
+        /* Status Toast */
+        #status-toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            background: #1a1a1a;
+            color: white;
+            font-size: 12px;
+            z-index: 3000;
+            display: none;
+            animation: fadeInRight 0.5s;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Capa de pétalos de rosa (Fondo global) -->
+    <div id="status-toast"></div>
     <div id="global-petals"></div>
 
-    <!-- Pantalla de Inicio -->
-    <div id="hero-screen">
-        <div id="hero-bg"></div>
-        <div id="hero-content" class="animate__animated animate__fadeIn px-4 relative z-10">
-            <div class="mb-8">
-                <span class="inline-block w-8 h-[1px] bg-rose-300 align-middle"></span>
-                <span class="mx-4 text-gray-400 uppercase tracking-[0.6em] text-[9px] font-bold">Cocina Literaria</span>
-                <span class="inline-block w-8 h-[1px] bg-rose-300 align-middle"></span>
+    <div class="admin-toggle" onclick="toggleAdmin()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="admin-panel">
+        <aside class="admin-sidebar">
+            <h2 class="text-4xl font-serif text-rose-500 mb-4">Curaduría</h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-12">Sincronización con GitHub activa</p>
+            
+            <div class="space-y-6 mt-auto">
+                <div class="p-6 bg-stone-50 rounded-3xl border border-stone-100">
+                    <p class="text-[9px] font-bold text-gray-400 mb-4 uppercase tracking-widest">Credenciales GitHub</p>
+                    <input type="password" id="gh-token" placeholder="Token PAT (ghp_...)" class="w-full text-xs p-3 rounded-xl border border-gray-200 mb-3 outline-none focus:border-rose-300">
+                    <input type="text" id="gh-repo" placeholder="usuario/repositorio" class="w-full text-xs p-3 rounded-xl border border-gray-200 outline-none focus:border-rose-300 mb-2">
+                    <p class="text-[8px] text-gray-400">Nota: El archivo debe llamarse stock.json en la raíz.</p>
+                </div>
+                <button id="publish-btn" onclick="publishToGithub()" class="w-full bg-rose-500 text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all shadow-xl shadow-rose-100 flex items-center justify-center gap-2">
+                    <span>Publicar en la Nube</span>
+                </button>
+                <button onclick="toggleAdmin()" class="w-full bg-black text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Ver Resultados</button>
             </div>
-            <h1 class="hero-title text-5xl md:text-8xl mb-8">Como Agua para Chocolate</h1>
-            <p class="text-gray-600 italic text-lg md:text-xl max-w-2xl mx-auto mb-16 font-serif leading-relaxed">
-                "El amor no se piensa, el amor se siente o no se siente, y si se siente, es como un fuego que te quema por dentro."
+        </aside>
+
+        <main class="admin-main">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10" id="admin-grid"></div>
+        </main>
+    </div>
+
+    <!-- Pantalla de Inicio -->
+    <div id="hero-screen" class="h-screen w-full flex flex-col items-center justify-center text-center fixed inset-0 z-50 bg-white transition-all duration-1000">
+        <div class="px-6 relative z-10 max-w-5xl">
+            <div class="mb-12 opacity-0 animate__animated animate__fadeIn">
+                <span class="text-gray-300 uppercase tracking-[1.2em] text-[9px] font-bold">Un Ciclo Ritual de Laura Esquivel</span>
+            </div>
+            <h1 id="animated-title" class="hero-title text-6xl md:text-[120px] mb-14 leading-none"></h1>
+            <p class="text-gray-400 italic text-xl md:text-2xl mb-24 font-serif leading-relaxed opacity-0 animate__animated animate__fadeIn animate__delay-1s max-w-2xl mx-auto">
+                "Estar como agua para chocolate es estar a punto de hervir, de explotar, de amar."
             </p>
-            <button onclick="enterApp()" class="group relative px-12 py-4 bg-white border border-gray-900 overflow-hidden transition-all duration-500 hover:text-white">
-                <span class="relative z-10 font-bold uppercase tracking-widest text-[11px]">Explorar Almanaque</span>
-                <div class="absolute inset-0 bg-gray-900 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <button onclick="enterApp()" class="group px-20 py-7 border border-gray-900 relative overflow-hidden transition-all duration-700 hover:border-rose-400 opacity-0 animate__animated animate__fadeInUp animate__delay-1s">
+                <span class="relative z-10 font-bold uppercase tracking-[0.6em] text-[11px] group-hover:text-white transition-colors">Entrar al Ritual</span>
+                <div class="absolute inset-0 bg-gray-900 transform translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out"></div>
             </button>
         </div>
     </div>
 
     <!-- Contenido Principal -->
-    <main id="main-content" class="p-6 md:p-20 opacity-0 transition-opacity duration-1000 max-w-7xl mx-auto hidden relative z-20">
-        <header class="text-center mb-28">
-            <h2 class="text-4xl md:text-6xl text-gray-900 font-serif mb-6">El Diario de Tita</h2>
-            <div class="flex items-center justify-center gap-4">
-                <p class="text-rose-500 uppercase tracking-[0.5em] text-[9px] font-bold">Crónica de una pasión mexicana</p>
-            </div>
+    <main id="main-content" class="hidden opacity-0 p-8 md:p-32 max-w-7xl mx-auto transition-opacity duration-1000 relative z-10">
+        <header class="text-center mb-48">
+            <h2 class="text-7xl md:text-[110px] font-serif italic mb-10 text-stone-800">El Ciclo de Tita</h2>
+            <div class="h-[1px] w-48 bg-rose-300 mx-auto"></div>
         </header>
 
-        <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
-            <!-- Dinámico -->
-        </div>
+        <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24"></div>
 
-        <footer class="mt-40 text-center border-t border-gray-100 pt-16 pb-20">
-            <p class="text-gray-400 text-[10px] tracking-[0.8em] uppercase font-serif italic">Laura Esquivel • Recetario de Amor</p>
+        <footer class="mt-80 text-center py-24 border-t border-stone-100">
+            <p class="text-[9px] tracking-[2em] uppercase text-stone-300">Como Agua para Chocolate — Almanaque Literario</p>
         </footer>
     </main>
 
     <script>
-        const apiKey = ""; 
+        // Datos maestros del JSON
+        let stockData = {
+            meses: [
+                { id: 0, nombre: "Enero", receta: "Tortas de Navidad", cita: "Tita lloraba desde el vientre por el destino ligado a la cebolla.", img: null },
+                { id: 1, nombre: "Febrero", receta: "Pastel Chabela", cita: "Las lágrimas de Tita contagiaron de tristeza infinita a los invitados.", img: null },
+                { id: 2, nombre: "Marzo", receta: "Codornices en Pétalos", cita: "La pasión se transmutó en el color rosado de la salsa.", img: null },
+                { id: 3, nombre: "Abril", receta: "Mole de Guajolote", cita: "Moliendo el cacao con un ritmo sagrado para encender el alma.", img: null },
+                { id: 4, nombre: "Mayo", receta: "Chorizo del Norte", cita: "Mama Elena vigilaba cada nudo como cada pensamiento.", img: null },
+                { id: 5, nombre: "Junio", receta: "Masa para Fósforos", cita: "Todos tenemos una caja de cerillos en nuestro interior.", img: null },
+                { id: 6, nombre: "Julio", receta: "Caldo de Colita", cita: "El primer vapor rompió el mudo silencio de su alma.", img: null },
+                { id: 7, nombre: "Agosto", receta: "Champandongo", cita: "Capas de comida como capas de secretos prohibidos.", img: null },
+                { id: 8, nombre: "Septiembre", receta: "Chocolate y Rosca", cita: "Estar como agua para chocolate es estar a punto de hervir.", img: null },
+                { id: 9, nombre: "Octubre", receta: "Torrejas de Natas", cita: "La dulzura era el único refugio contra la amargura del mundo.", img: null },
+                { id: 10, nombre: "Noviembre", receta: "Frijoles Tepeaca", cita: "La muerte no es triste cuando se ha amado con intensidad.", img: null },
+                { id: 11, nombre: "Diciembre", receta: "Chiles en Nogada", cita: "El fuego final fue la liberación total de dos almas amadas.", img: null }
+            ]
+        };
 
-        const meses = [
-            { nombre: "Enero", receta: "Tortas de Navidad", prompt: "Oil painting style, vintage Mexican ranch kitchen 1910, piles of white onions, dramatic candlelight, Tita crying, masterpiece, magical realism", cita: "Tita lloraba desde el vientre porque sabía que su destino estaba ligado para siempre a la cebolla." },
-            { nombre: "Febrero", receta: "Pastel Chabela", prompt: "Oil painting, huge white tiered wedding cake, pink ethereal mist, melancholic atmosphere, vintage Mexican wedding, masterpiece", cita: "El pastel de bodas se mezcló con las lágrimas de Tita, contagiando a todos de una tristeza infinita." },
-            { nombre: "Marzo", receta: "Codornices en Pétalos de Rosas", prompt: "Oil painting, roasted quails with glowing pink rose sauce, rustic plate, sensual lighting, magical realism, masterpiece", cita: "El color rosado de la salsa era la transmutación de la pasión de Tita hacia Gertrudis." },
-            { nombre: "Abril", receta: "Mole de Guajolote", prompt: "Oil painting, dark rich mole sauce in clay pot, volcanic stone metate, smoke, rustic ranch, magical realism, warm tones", cita: "Tita ponía toda su alma en el metate, moliendo el cacao y los chiles con un ritmo sagrado." },
-            { nombre: "Mayo", receta: "Chorizo del Norte", prompt: "Oil painting, red chorizos hanging in dark wooden ranch kitchen, harsh shadows, Mamá Elena silhouette, Mexican revolution era", cita: "Mamá Elena vigilaba cada nudo del chorizo, como vigilaba cada pensamiento de Tita." },
-            { nombre: "Junio", receta: "Masa para hacer Fósforos", prompt: "Oil painting, glowing matchstick, golden magical sparks, soul fire, spiritual light, dark background, masterpiece", cita: "Nuestra alma necesita un detonador para encender esa caja de cerillos que todos llevamos dentro." },
-            { nombre: "Julio", receta: "Caldo de Colita de Res", prompt: "Oil painting, steaming bowl of soup, healing light, peaceful ranch kitchen, Chencha serving, magical realism, soft lighting", cita: "Con el primer vapor del caldo, el mudo silencio de su alma finalmente se rompió." },
-            { nombre: "Agosto", receta: "Champandongo", prompt: "Oil painting, complex layered Mexican meat dish, clay plate, rustic family table, secrets, 19th century ranch, masterpiece", cita: "Un plato de capas, como las capas de secretos que separaban a Tita de Pedro." },
-            { nombre: "Septiembre", receta: "Chocolate y Rosca de Reyes", prompt: "Oil painting, frothy Mexican chocolate in clay mug, wooden whisk, steam, anger, boiling point, magical realism style", cita: "Estar como agua para chocolate es estar en el punto exacto donde el hervor es inevitable." },
-            { nombre: "Octubre", receta: "Torrejas de Natas", prompt: "Oil painting, sweet golden dessert with cream, ray of light in a dark house, sweet refuge, classical Mexican still life, masterpiece", cita: "La dulzura de la nata era la única forma de soportar la rigidez de la casa de Mamá Elena." },
-            { nombre: "Noviembre", receta: "Frijoles Tepeaca", prompt: "Oil painting, beans in clay pot, Day of the Dead atmosphere, earthy tones, spiritual ranch life, magical realism", cita: "Incluso en el luto, el sabor de la tierra en los frijoles recordaba que la vida seguía." },
-            { nombre: "Diciembre", receta: "Chiles en Nogada", prompt: "Oil painting, Chiles en Nogada, pomegranate seeds like rubies, white cream sauce, fire of passion, liberation, masterpiece", cita: "El fuego final no fue un incendio, fue la liberación total de dos almas que se amaron en silencio." }
-        ];
+        const iconPlaceholder = `<svg width="32" height="32" fill="none" stroke="#ddd" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
+
+        function showToast(msg, duration = 3000) {
+            const toast = document.getElementById('status-toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, duration);
+        }
+
+        // Lógica de GitHub real
+        async function publishToGithub() {
+            const token = document.getElementById('gh-token').value;
+            const repo = document.getElementById('gh-repo').value;
+            const btn = document.getElementById('publish-btn');
+
+            if(!token || !repo) {
+                showToast("⚠️ Faltan credenciales de GitHub");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span>Procesando...</span>`;
+            showToast("⏳ Conectando con GitHub...");
+
+            try {
+                const url = `https://api.github.com/repos/${repo}/contents/stock.json`;
+                
+                // 1. Intentar obtener el archivo actual (para el SHA)
+                let sha = "";
+                const getResponse = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+
+                if(getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    sha = fileData.sha;
+                }
+
+                // 2. Preparar el nuevo contenido
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(stockData, null, 2))));
+
+                // 3. Hacer el commit
+                const putResponse = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: "Actualización automática: Almanaque de Tita",
+                        content: content,
+                        sha: sha
+                    })
+                });
+
+                if(putResponse.ok) {
+                    showToast("✅ ¡Publicado! Todo el mundo verá los cambios ahora.");
+                } else {
+                    const err = await putResponse.json();
+                    showToast("❌ Error: " + err.message);
+                }
+
+            } catch (e) {
+                showToast("❌ Error de conexión");
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Publicar en la Nube</span>`;
+            }
+        }
+
+        function animateTitle() {
+            const text = "Como Agua para Chocolate";
+            const container = document.getElementById('animated-title');
+            container.innerHTML = '';
+            text.split(' ').forEach((word, wordIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'inline-block mr-6';
+                word.split('').forEach((char, charIdx) => {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.className = 'char';
+                    span.style.animationDelay = `${(wordIdx * 5 + charIdx) * 0.08}s`;
+                    wordSpan.appendChild(span);
+                });
+                container.appendChild(wordSpan);
+            });
+        }
 
         function createPetals() {
             const container = document.getElementById('global-petals');
-            container.innerHTML = ''; // Limpiar por si acaso
-            for (let i = 0; i < 50; i++) {
+            container.innerHTML = '';
+            for (let i = 0; i < 45; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'rose-petal';
-                
-                // Valores aleatorios para variedad
-                const size = Math.random() * 8 + 10;
-                petal.style.width = `${size}px`;
-                petal.style.height = `${size}px`;
+                const size = Math.random() * 14 + 10;
+                petal.style.width = size + 'px';
+                petal.style.height = size + 'px';
                 petal.style.left = Math.random() * 100 + 'vw';
-                
-                const duration = Math.random() * 5 + 7;
-                const delay = Math.random() * 10;
-                petal.style.animationDuration = `${duration}s`;
-                petal.style.animationDelay = `-${delay}s`; // Negativo para que ya estén cayendo al cargar
-                
+                petal.style.animationDuration = (Math.random() * 8 + 10) + 's';
+                petal.style.animationDelay = '-' + (Math.random() * 10) + 's';
                 container.appendChild(petal);
             }
         }
 
-        async function generateIAImage(promptText) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
-            const payload = { 
-                contents: [{ parts: [{ text: promptText }] }],
-                generationConfig: { responseModalities: ['IMAGE'] }
-            };
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-panel');
+            const isVisible = panel.style.display === 'grid';
+            panel.style.display = isVisible ? 'none' : 'grid';
+            if (isVisible) renderPublicContent(); else renderAdminContent();
+        }
 
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
-                    const data = await res.json();
-                    const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-                    if (base64) return `data:image/png;base64,${base64}`;
-                } catch (e) {
-                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
-                }
+        function handleFile(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    stockData.meses[index].img = e.target.result;
+                    renderAdminContent();
+                    showToast(`Imagen de ${stockData.meses[index].nombre} lista para subir.`);
+                };
+                reader.readAsDataURL(file);
             }
-            return null;
+        }
+
+        function renderAdminContent() {
+            const grid = document.getElementById('admin-grid');
+            grid.innerHTML = '';
+            stockData.meses.forEach((mes, i) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-3xl border border-gray-100 flex flex-col shadow-sm';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-5">
+                        <span class="text-rose-400 font-bold text-[10px] uppercase tracking-widest">${mes.nombre}</span>
+                        <span class="text-gray-300 text-[9px] uppercase tracking-tighter">${mes.receta}</span>
+                    </div>
+                    <div onclick="document.getElementById('in-${i}').click()" class="drop-zone mb-6 group relative">
+                        ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : iconPlaceholder}
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                             <span class="text-white text-[9px] font-bold uppercase tracking-[0.2em]">Seleccionar Archivo</span>
+                        </div>
+                    </div>
+                    <input type="file" id="in-${i}" class="hidden" accept="image/*" onchange="handleFile(event, ${i})">
+                    <p class="text-[11px] text-gray-400 italic leading-relaxed border-l border-rose-100 pl-4">${mes.cita}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderPublicContent() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            stockData.meses.forEach((mes, i) => {
+                const card = document.createElement('div');
+                card.className = 'public-card opacity-0 transform translate-y-12';
+                card.innerHTML = `
+                    <div class="aspect-[4/5] mb-12 overflow-hidden bg-stone-50 flex items-center justify-center relative shadow-2xl">
+                        ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : `<div class="opacity-10">${iconPlaceholder}</div>`}
+                        <div class="absolute inset-0 border-[20px] border-white/10 pointer-events-none"></div>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-rose-400 font-bold text-[10px] uppercase tracking-[0.6em] mb-6 block">${mes.receta}</span>
+                        <h3 class="text-4xl font-serif italic mb-8 text-gray-800">${mes.nombre}</h3>
+                        <div class="w-12 h-[1px] bg-stone-200 mx-auto mb-10"></div>
+                        <p class="text-[13px] text-gray-400 italic leading-relaxed font-serif px-2">"${mes.cita}"</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+                setTimeout(() => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, i * 80);
+            });
         }
 
         function enterApp() {
             const hero = document.getElementById('hero-screen');
-            const heroBg = document.getElementById('hero-bg');
-            const heroContent = document.getElementById('hero-content');
             const main = document.getElementById('main-content');
-            
-            heroContent.classList.add('slide-up-content');
-            heroBg.style.transform = 'translateY(-100%)';
-            
+            hero.classList.add('fade-out');
             setTimeout(() => {
                 hero.classList.add('hidden');
                 main.classList.remove('hidden');
-                setTimeout(() => main.classList.remove('opacity-0'), 50);
-                renderAlmanaque();
-            }, 1000);
+                setTimeout(() => main.classList.remove('opacity-0'), 100);
+                renderPublicContent();
+            }, 1200);
         }
 
-        async function renderAlmanaque() {
-            const grid = document.getElementById('calendar-grid');
-            
-            for (let i = 0; i < meses.length; i++) {
-                const mes = meses[i];
-                const card = document.createElement('div');
-                card.className = 'talavera-card';
-                card.innerHTML = `
-                    <div class="card-inner-border">
-                        <div class="image-container mb-6">
-                            <div class="absolute inset-0 flex items-center justify-center bg-gray-50" id="loader-box-${i}">
-                                <div class="loader-ia"></div>
-                            </div>
-                            <img id="img-${i}" class="opacity-0 transition-opacity duration-1000" alt="${mes.nombre}">
-                        </div>
-                        <div class="text-center">
-                            <span class="text-rose-400 font-bold text-[8px] uppercase tracking-[0.4em] mb-2 block">${mes.receta}</span>
-                            <h3 class="text-2xl text-gray-900 font-serif mb-4">${mes.nombre}</h3>
-                            <div class="divider"></div>
-                            <p class="text-[11px] italic text-gray-500 leading-relaxed font-serif px-1">
-                                "${mes.cita}"
-                            </p>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-                
-                setTimeout(() => card.classList.add('visible'), 150 * i);
-
-                generateIAImage(mes.prompt).then(url => {
-                    const img = document.getElementById(`img-${i}`);
-                    const loaderBox = document.getElementById(`loader-box-${i}`);
-                    if (url) {
-                        img.src = url;
-                        img.onload = () => {
-                            img.classList.remove('opacity-0');
-                            loaderBox.classList.add('hidden');
-                        };
-                    }
-                });
-            }
-        }
-
-        window.onload = createPetals;
+        window.onload = () => {
+            createPetals();
+            animateTitle();
+            renderAdminContent();
+        };
     </script>
 </body>
 </html>
