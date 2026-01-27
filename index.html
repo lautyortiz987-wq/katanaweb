@@ -22,7 +22,6 @@
             overflow-x: hidden;
         }
 
-        /* CAPA DE PÉTALOS (Siempre visible) */
         #global-petals {
             position: fixed;
             inset: 0;
@@ -45,7 +44,6 @@
             100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
         }
 
-        /* ANIMACIÓN DE LETRAS (HERO) */
         .char {
             display: inline-block;
             opacity: 0;
@@ -64,7 +62,6 @@
             letter-spacing: -0.02em;
         }
 
-        /* PANEL DE ADMINISTRACIÓN */
         #admin-panel {
             position: fixed;
             inset: 0;
@@ -105,7 +102,6 @@
 
         .drop-zone:hover { border-color: var(--rose-color); background: #fffafa; }
 
-        /* BOTÓN ADMIN FLOTANTE */
         .admin-toggle {
             position: fixed;
             bottom: 2rem;
@@ -126,7 +122,6 @@
         
         .admin-toggle:hover { transform: rotate(90deg) scale(1.1); }
 
-        /* GALERÍA PÚBLICA */
         .public-card {
             background: white;
             padding: 3rem;
@@ -142,7 +137,6 @@
         .hidden { display: none !important; }
         .fade-out { opacity: 0; pointer-events: none; transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1); }
 
-        /* Status Toast */
         #status-toast {
             position: fixed;
             top: 2rem;
@@ -164,26 +158,27 @@
     <div id="global-petals"></div>
 
     <div class="admin-toggle" onclick="toggleAdmin()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
     </div>
 
-    <!-- Panel de Administración -->
     <div id="admin-panel">
         <aside class="admin-sidebar">
             <h2 class="text-4xl font-serif text-rose-500 mb-4">Curaduría</h2>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-12">Sincronización con GitHub activa</p>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-12">Publicación Directa</p>
             
             <div class="space-y-6 mt-auto">
                 <div class="p-6 bg-stone-50 rounded-3xl border border-stone-100">
-                    <p class="text-[9px] font-bold text-gray-400 mb-4 uppercase tracking-widest">Credenciales GitHub</p>
-                    <input type="password" id="gh-token" placeholder="Token PAT (ghp_...)" class="w-full text-xs p-3 rounded-xl border border-gray-200 mb-3 outline-none focus:border-rose-300">
-                    <input type="text" id="gh-repo" placeholder="usuario/repositorio" class="w-full text-xs p-3 rounded-xl border border-gray-200 outline-none focus:border-rose-300 mb-2">
-                    <p class="text-[8px] text-gray-400">Nota: El archivo debe llamarse stock.json en la raíz.</p>
+                    <p class="text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-widest">Estado de Conexión</p>
+                    <p id="repo-status" class="text-[10px] text-gray-500 italic">Configura tu repositorio abajo:</p>
+                    <input type="text" id="gh-repo" placeholder="usuario/nombre-repo" class="w-full text-xs p-3 mt-4 rounded-xl border border-gray-200 outline-none focus:border-rose-300">
                 </div>
+                <!-- Token oculto internamente para que no lo pida -->
+                <input type="hidden" id="gh-token" value="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">
+                
                 <button id="publish-btn" onclick="publishToGithub()" class="w-full bg-rose-500 text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all shadow-xl shadow-rose-100 flex items-center justify-center gap-2">
-                    <span>Publicar en la Nube</span>
+                    <span>Publicar Cambios</span>
                 </button>
-                <button onclick="toggleAdmin()" class="w-full bg-black text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Ver Resultados</button>
+                <button onclick="toggleAdmin()" class="w-full bg-black text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Cerrar Editor</button>
             </div>
         </aside>
 
@@ -192,7 +187,6 @@
         </main>
     </div>
 
-    <!-- Pantalla de Inicio -->
     <div id="hero-screen" class="h-screen w-full flex flex-col items-center justify-center text-center fixed inset-0 z-50 bg-white transition-all duration-1000">
         <div class="px-6 relative z-10 max-w-5xl">
             <div class="mb-12 opacity-0 animate__animated animate__fadeIn">
@@ -209,22 +203,17 @@
         </div>
     </div>
 
-    <!-- Contenido Principal -->
     <main id="main-content" class="hidden opacity-0 p-8 md:p-32 max-w-7xl mx-auto transition-opacity duration-1000 relative z-10">
         <header class="text-center mb-48">
             <h2 class="text-7xl md:text-[110px] font-serif italic mb-10 text-stone-800">El Ciclo de Tita</h2>
             <div class="h-[1px] w-48 bg-rose-300 mx-auto"></div>
         </header>
-
         <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24"></div>
-
-        <footer class="mt-80 text-center py-24 border-t border-stone-100">
-            <p class="text-[9px] tracking-[2em] uppercase text-stone-300">Como Agua para Chocolate — Almanaque Literario</p>
-        </footer>
     </main>
 
     <script>
-        // Datos maestros del JSON
+        const MASTER_TOKEN = "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";
+        
         let stockData = {
             meses: [
                 { id: 0, nombre: "Enero", receta: "Tortas de Navidad", cita: "Tita lloraba desde el vientre por el destino ligado a la cebolla.", img: null },
@@ -244,106 +233,70 @@
 
         const iconPlaceholder = `<svg width="32" height="32" fill="none" stroke="#ddd" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
 
-        function showToast(msg, duration = 3000) {
+        function showToast(msg) {
             const toast = document.getElementById('status-toast');
             toast.textContent = msg;
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, duration);
+            setTimeout(() => toast.style.display = 'none', 4000);
         }
 
-        // Lógica de GitHub real
+        function safeBtoa(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+        }
+
         async function publishToGithub() {
-            const token = document.getElementById('gh-token').value;
-            const repo = document.getElementById('gh-repo').value;
+            const repo = document.getElementById('gh-repo').value.trim();
             const btn = document.getElementById('publish-btn');
 
-            if(!token || !repo) {
-                showToast("⚠️ Faltan credenciales de GitHub");
+            if(!repo || !repo.includes('/')) {
+                showToast("⚠️ Introduce tu repositorio (ejemplo: usuario/mi-web)");
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = `<span>Procesando...</span>`;
-            showToast("⏳ Conectando con GitHub...");
+            btn.innerHTML = `<span>Publicando...</span>`;
 
             try {
                 const url = `https://api.github.com/repos/${repo}/contents/stock.json`;
                 
-                // 1. Intentar obtener el archivo actual (para el SHA)
-                let sha = "";
                 const getResponse = await fetch(url, {
-                    headers: { 'Authorization': `token ${token}` }
+                    headers: { 'Authorization': `Bearer ${MASTER_TOKEN}` }
                 });
 
+                let sha = null;
                 if(getResponse.ok) {
                     const fileData = await getResponse.json();
                     sha = fileData.sha;
                 }
 
-                // 2. Preparar el nuevo contenido
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(stockData, null, 2))));
+                const jsonStr = JSON.stringify(stockData, null, 2);
+                const content = safeBtoa(jsonStr);
 
-                // 3. Hacer el commit
                 const putResponse = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${token}`,
+                        'Authorization': `Bearer ${MASTER_TOKEN}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: "Actualización automática: Almanaque de Tita",
+                        message: "Actualización automática de Almanaque",
                         content: content,
-                        sha: sha
+                        sha: sha || undefined
                     })
                 });
 
                 if(putResponse.ok) {
-                    showToast("✅ ¡Publicado! Todo el mundo verá los cambios ahora.");
+                    showToast("✅ ¡Publicado con éxito!");
+                    document.getElementById('repo-status').textContent = "Última sincronización: Hace un momento";
                 } else {
                     const err = await putResponse.json();
-                    showToast("❌ Error: " + err.message);
+                    showToast(`❌ Error: ${err.message}`);
                 }
-
             } catch (e) {
-                showToast("❌ Error de conexión");
-                console.error(e);
+                showToast("❌ Error de red.");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<span>Publicar en la Nube</span>`;
-            }
-        }
-
-        function animateTitle() {
-            const text = "Como Agua para Chocolate";
-            const container = document.getElementById('animated-title');
-            container.innerHTML = '';
-            text.split(' ').forEach((word, wordIdx) => {
-                const wordSpan = document.createElement('span');
-                wordSpan.className = 'inline-block mr-6';
-                word.split('').forEach((char, charIdx) => {
-                    const span = document.createElement('span');
-                    span.textContent = char;
-                    span.className = 'char';
-                    span.style.animationDelay = `${(wordIdx * 5 + charIdx) * 0.08}s`;
-                    wordSpan.appendChild(span);
-                });
-                container.appendChild(wordSpan);
-            });
-        }
-
-        function createPetals() {
-            const container = document.getElementById('global-petals');
-            container.innerHTML = '';
-            for (let i = 0; i < 45; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'rose-petal';
-                const size = Math.random() * 14 + 10;
-                petal.style.width = size + 'px';
-                petal.style.height = size + 'px';
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.animationDuration = (Math.random() * 8 + 10) + 's';
-                petal.style.animationDelay = '-' + (Math.random() * 10) + 's';
-                container.appendChild(petal);
+                btn.innerHTML = `<span>Publicar Cambios</span>`;
             }
         }
 
@@ -361,7 +314,6 @@
                 reader.onload = (e) => {
                     stockData.meses[index].img = e.target.result;
                     renderAdminContent();
-                    showToast(`Imagen de ${stockData.meses[index].nombre} lista para subir.`);
                 };
                 reader.readAsDataURL(file);
             }
@@ -380,9 +332,6 @@
                     </div>
                     <div onclick="document.getElementById('in-${i}').click()" class="drop-zone mb-6 group relative">
                         ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : iconPlaceholder}
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
-                             <span class="text-white text-[9px] font-bold uppercase tracking-[0.2em]">Seleccionar Archivo</span>
-                        </div>
                     </div>
                     <input type="file" id="in-${i}" class="hidden" accept="image/*" onchange="handleFile(event, ${i})">
                     <p class="text-[11px] text-gray-400 italic leading-relaxed border-l border-rose-100 pl-4">${mes.cita}</p>
@@ -396,24 +345,19 @@
             grid.innerHTML = '';
             stockData.meses.forEach((mes, i) => {
                 const card = document.createElement('div');
-                card.className = 'public-card opacity-0 transform translate-y-12';
+                card.className = 'public-card opacity-0 transform translate-y-12 transition-all duration-700';
                 card.innerHTML = `
                     <div class="aspect-[4/5] mb-12 overflow-hidden bg-stone-50 flex items-center justify-center relative shadow-2xl">
                         ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : `<div class="opacity-10">${iconPlaceholder}</div>`}
-                        <div class="absolute inset-0 border-[20px] border-white/10 pointer-events-none"></div>
                     </div>
                     <div class="text-center">
                         <span class="text-rose-400 font-bold text-[10px] uppercase tracking-[0.6em] mb-6 block">${mes.receta}</span>
                         <h3 class="text-4xl font-serif italic mb-8 text-gray-800">${mes.nombre}</h3>
-                        <div class="w-12 h-[1px] bg-stone-200 mx-auto mb-10"></div>
                         <p class="text-[13px] text-gray-400 italic leading-relaxed font-serif px-2">"${mes.cita}"</p>
                     </div>
                 `;
                 grid.appendChild(card);
-                setTimeout(() => {
-                    card.style.opacity = "1";
-                    card.style.transform = "translateY(0)";
-                }, i * 80);
+                setTimeout(() => { card.style.opacity = "1"; card.style.transform = "translateY(0)"; }, i * 80);
             });
         }
 
@@ -429,11 +373,38 @@
             }, 1200);
         }
 
-        window.onload = () => {
-            createPetals();
-            animateTitle();
-            renderAdminContent();
-        };
+        function animateTitle() {
+            const text = "Como Agua para Chocolate";
+            const container = document.getElementById('animated-title');
+            text.split(' ').forEach((word, wordIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'inline-block mr-6';
+                word.split('').forEach((char, charIdx) => {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.className = 'char';
+                    span.style.animationDelay = `${(wordIdx * 5 + charIdx) * 0.08}s`;
+                    wordSpan.appendChild(span);
+                });
+                container.appendChild(wordSpan);
+            });
+        }
+
+        function createPetals() {
+            const container = document.getElementById('global-petals');
+            for (let i = 0; i < 45; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'rose-petal';
+                const size = Math.random() * 14 + 10;
+                petal.style.width = size + 'px'; petal.style.height = size + 'px';
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.animationDuration = (Math.random() * 8 + 10) + 's';
+                petal.style.animationDelay = '-' + (Math.random() * 10) + 's';
+                container.appendChild(petal);
+            }
+        }
+
+        window.onload = () => { createPetals(); animateTitle(); };
     </script>
 </body>
 </html>
