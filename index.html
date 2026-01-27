@@ -158,27 +158,29 @@
         ];
 
         async function fetchImage(prompt) {
-            // Cambio de modelo al soportado oficialmente para evitar error 403
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            // Utilizamos el modelo de generación de imágenes más compatible con el entorno de Canvas
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
             const payload = { 
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { 
-                    responseModalities: ['IMAGE'] 
-                }
+                instances: [{ prompt: prompt }],
+                parameters: { sampleCount: 1 }
             };
             
             for (let i = 0; i < 5; i++) {
                 try {
                     const res = await fetch(url, { 
                         method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload) 
                     });
                     
+                    if (res.status === 403) {
+                        // Si falla el modelo principal, intentamos con el modelo de respaldo inmediatamente
+                        return await fetchImageFallback(prompt);
+                    }
+
                     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                     
                     const data = await res.json();
-                    const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                    const base64 = data.predictions?.[0]?.bytesBase64Encoded;
                     
                     if (base64) {
                         return `data:image/png;base64,${base64}`;
@@ -186,6 +188,25 @@
                 } catch (e) {
                     await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
                 }
+            }
+            return await fetchImageFallback(prompt);
+        }
+
+        async function fetchImageFallback(prompt) {
+            // Modelo secundario por si el primero tiene restricciones de permisos (403)
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            const payload = { 
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseModalities: ['IMAGE'] }
+            };
+            
+            try {
+                const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                if (base64) return `data:image/png;base64,${base64}`;
+            } catch (e) {
+                console.error("Fallback failed", e);
             }
             return null;
         }
@@ -214,7 +235,7 @@
             const grid = document.getElementById('calendar-grid');
             const btn = document.getElementById('generateBtn');
             btn.disabled = true;
-            btn.innerText = "Preparando Banquete Visual...";
+            btn.innerText = "Cocinando Imágenes...";
             grid.innerHTML = "";
 
             for (const mes of meses) {
@@ -227,13 +248,13 @@
                 if (imgUrl) {
                     frame.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover gradual-reveal" alt="${mes.nombre}">`;
                 } else {
-                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-500">Error de conexión con el modelo de imagen. Reintenta en unos segundos.</div>`;
+                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-500 font-bold">La conexión es inestable. Intenta pulsar de nuevo en un momento.</div>`;
                 }
                 
-                await new Promise(r => setTimeout(r, 200));
+                await new Promise(r => setTimeout(r, 300));
             }
             
-            btn.innerText = "Almanaque Finalizado";
+            btn.innerText = "Almanaque Completo";
             btn.disabled = false;
         }
 
