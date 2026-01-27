@@ -5,260 +5,338 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almanaque: Como Agua para Chocolate</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,900&display=swap');
         
         :root {
-            --mexican-blue: #0047ab;
-            --vintage-paper: #fdfaf6;
+            --vintage-paper: #ffffff;
+            --rose-color: #fb7185;
         }
 
         body {
             background-color: var(--vintage-paper);
             font-family: 'Libre Baskerville', serif;
-            color: #2d241e;
+            color: #1a1a1a;
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
         }
 
-        .talavera-card {
+        /* Contenedor de pétalos - Siempre visible */
+        #global-petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5; /* Fondo, pero visible sobre el blanco */
+            overflow: hidden;
+        }
+
+        .rose-petal {
+            position: absolute;
+            background: var(--rose-color);
+            border-radius: 150% 0 150% 50%;
+            opacity: 0.6;
+            animation: fall linear infinite;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% { 
+                transform: translateY(-10vh) rotate(0deg) translateX(0); 
+                opacity: 0; 
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { 
+                transform: translateY(110vh) rotate(360deg) translateX(50px); 
+                opacity: 0; 
+            }
+        }
+
+        /* Pantalla de Inicio */
+        #hero-screen {
+            background-color: transparent; /* Para ver pétalos detrás */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 200;
+        }
+
+        /* Fondo blanco para el inicio que se desliza */
+        #hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: white;
-            border: 15px solid transparent;
-            border-image: url('https://www.transparenttextures.com/patterns/azulejo.png') 40 round;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-            transition: transform 0.3s ease;
+            z-index: -1;
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+        }
+
+        /* Tarjetas del Calendario */
+        .talavera-card {
+            background: rgba(255, 255, 255, 0.95);
+            position: relative;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            opacity: 0;
+            transform: translateY(40px);
+            border-radius: 2px;
+            z-index: 20;
+        }
+
+        .card-inner-border {
+            border: 1px solid #f3f4f6;
+            margin: 4px;
+            padding: 24px;
+            border-radius: 1px;
+            height: calc(100% - 8px);
+        }
+
+        .talavera-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .talavera-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            border-color: var(--rose-color);
         }
 
-        h1, h2, .month-title {
-            font-family: 'Playfair Display', serif;
-            letter-spacing: -0.02em;
-        }
-
-        .image-frame {
+        .image-container {
             position: relative;
-            border: 1px solid #e5e7eb;
             overflow: hidden;
-            background: #f3f4f6;
+            height: 320px;
+            background: #fdfaf6;
+            border: 1px solid #eeeeee;
         }
 
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--mexican-blue);
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(0.1) contrast(1.05);
+            transition: transform 1.5s ease;
+        }
+
+        .talavera-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .loader-ia {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--rose-color);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .gradual-reveal {
-            animation: fadeIn 1.5s ease-in-out;
+
+        .divider {
+            height: 1px;
+            width: 40px;
+            background: #d1d5db;
+            margin: 20px auto;
+            transition: all 0.4s ease;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .talavera-card:hover .divider {
+            width: 80px;
+            background: var(--rose-color);
+        }
+
+        .hidden { display: none !important; }
+        .slide-up-content { transform: translateY(-100vh); opacity: 0; pointer-events: none; }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body>
 
-    <header class="max-w-4xl mx-auto text-center mb-16">
-        <span class="text-blue-700 font-bold tracking-widest uppercase text-sm mb-2 block">Proyecto de Literatura: Realismo Mágico</span>
-        <h1 class="text-5xl md:text-7xl text-amber-950 mb-6">Como Agua para Chocolate</h1>
-        <div class="h-1 w-32 bg-amber-800 mx-auto mb-6"></div>
-        <p class="text-lg text-amber-900 max-w-2xl mx-auto leading-relaxed italic">
-            "Un viaje a través de los doce meses donde los ingredientes dictan el destino del corazón."
-        </p>
-        <button id="generateBtn" class="mt-10 bg-blue-800 text-white px-10 py-4 rounded-sm hover:bg-blue-950 transition-all shadow-xl font-bold uppercase tracking-widest text-sm">
-            Iniciar Secuencia del Almanaque
-        </button>
-    </header>
+    <!-- Capa de pétalos de rosa (Fondo global) -->
+    <div id="global-petals"></div>
 
-    <div id="calendar-grid" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        <!-- Los meses se inyectarán aquí -->
+    <!-- Pantalla de Inicio -->
+    <div id="hero-screen">
+        <div id="hero-bg"></div>
+        <div id="hero-content" class="animate__animated animate__fadeIn px-4 relative z-10">
+            <div class="mb-8">
+                <span class="inline-block w-8 h-[1px] bg-rose-300 align-middle"></span>
+                <span class="mx-4 text-gray-400 uppercase tracking-[0.6em] text-[9px] font-bold">Cocina Literaria</span>
+                <span class="inline-block w-8 h-[1px] bg-rose-300 align-middle"></span>
+            </div>
+            <h1 class="hero-title text-5xl md:text-8xl mb-8">Como Agua para Chocolate</h1>
+            <p class="text-gray-600 italic text-lg md:text-xl max-w-2xl mx-auto mb-16 font-serif leading-relaxed">
+                "El amor no se piensa, el amor se siente o no se siente, y si se siente, es como un fuego que te quema por dentro."
+            </p>
+            <button onclick="enterApp()" class="group relative px-12 py-4 bg-white border border-gray-900 overflow-hidden transition-all duration-500 hover:text-white">
+                <span class="relative z-10 font-bold uppercase tracking-widest text-[11px]">Explorar Almanaque</span>
+                <div class="absolute inset-0 bg-gray-900 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            </button>
+        </div>
     </div>
+
+    <!-- Contenido Principal -->
+    <main id="main-content" class="p-6 md:p-20 opacity-0 transition-opacity duration-1000 max-w-7xl mx-auto hidden relative z-20">
+        <header class="text-center mb-28">
+            <h2 class="text-4xl md:text-6xl text-gray-900 font-serif mb-6">El Diario de Tita</h2>
+            <div class="flex items-center justify-center gap-4">
+                <p class="text-rose-500 uppercase tracking-[0.5em] text-[9px] font-bold">Crónica de una pasión mexicana</p>
+            </div>
+        </header>
+
+        <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
+            <!-- Dinámico -->
+        </div>
+
+        <footer class="mt-40 text-center border-t border-gray-100 pt-16 pb-20">
+            <p class="text-gray-400 text-[10px] tracking-[0.8em] uppercase font-serif italic">Laura Esquivel • Recetario de Amor</p>
+        </footer>
+    </main>
 
     <script>
         const apiKey = ""; 
 
         const meses = [
-            {
-                nombre: "Enero",
-                receta: "Tortas de Navidad",
-                descripcion: "Cinematic close-up of a young Tita in a 19th-century Mexican kitchen. Soft golden morning light through a window. She is intensely crying over a wooden table covered in a mountain of chopped white onions. The tears are crystalline and glowing. Realistic oil painting style, warm earthy tones, magical realism atmosphere.",
-                epigrafe: "Dicen que Tita era tan sensible a la cebolla que desde que estaba en el vientre de mi bisabuela lloraba y lloraba..."
-            },
-            {
-                nombre: "Febrero",
-                receta: "Pastel Chabela",
-                descripcion: "A monumental white tiered wedding cake at a celebration. A supernatural mist of 'nostalgia' flows from the cake slices. In the blurred background, wedding guests are visibly weeping with profound sadness. Moody lighting, desaturated colors, surreal atmosphere, high detail.",
-                epigrafe: "En el momento en que probaron el pastel, un sentimiento de inmensa nostalgia se adueñó de todos los presentes."
-            },
-            {
-                nombre: "Marzo",
-                receta: "Codornices en Pétalos de Rosas",
-                descripcion: "Exotic dish of quails in a brilliant fuchsia rose petal sauce. A mystical pink aura emanates from the plate. Ethereal rose petals floating in the air. Sensual and vibrant atmosphere, dramatic lighting, rich textures, Mexican folk art influence.",
-                epigrafe: "Parecía que el alimento que estaba ingiriendo tenía efectos afrodisíacos, pues Gertrudis empezó a sentir un calor interno."
-            },
-            {
-                nombre: "Abril",
-                receta: "Mole de Guajolote",
-                descripcion: "Traditional Mexican outdoor kitchen. A large clay pot bubbling with dark, glossy mole. Intricate steam patterns rising. A sense of family tension in the air. Earthy color palette: chocolate, terracotta, and deep gold. Authentic 19th century setting.",
-                epigrafe: "Tita sabía muy bien que el secreto de un buen mole reside en la paciencia con que se muelen los ingredientes."
-            },
-            {
-                nombre: "Mayo",
-                receta: "Chorizo del Norte",
-                descripcion: "Stern hands of Mamá Elena tying rows of red chorizo in a cool, dark larder. Sharp shafts of light cutting through the darkness, illuminating dust motes. A feeling of rigid authority and cold discipline. High contrast photography style.",
-                epigrafe: "Para Mamá Elena, el orden y la disciplina eran la base de cualquier actividad, incluida la cocina."
-            },
-            {
-                nombre: "Junio",
-                receta: "Masa para hacer Fósforos",
-                descripcion: "Macro shot of an antique wooden matchbox. One single match is burning with a blinding, divine golden light that illuminates the surrounding darkness. The flame seems to contain a miniature galaxy. Metaphysical and spiritual lighting.",
-                epigrafe: "Si una emoción fuerte enciende todos los cerillos que llevamos por dentro, un resplandor superior nos mostrará el camino."
-            },
-            {
-                nombre: "Julio",
-                receta: "Caldo de Colita de Res",
-                descripcion: "A humble bowl of steaming clear broth on a rustic table. The steam delicately forms the shape of comforting ghost-like hands embracing the bowl. Soft blue and white light, sense of peace, healing and spiritual restoration.",
-                epigrafe: "Tita tomó la cuchara y al probar el primer sorbo de caldo, sintió que el alma le volvía al cuerpo."
-            },
-            {
-                nombre: "Agosto",
-                receta: "Champandongo",
-                descripcion: "A complex multi-layered dish of meat, tortillas and cream. The composition uses a forced perspective to show the 'layers' of Tita's complex emotions. Rich culinary textures, vibrant but cluttered, reflecting internal chaos.",
-                epigrafe: "El champandongo es un plato refinado, pero requiere de una armonía total para no resultar indigesto."
-            },
-            {
-                nombre: "Septiembre",
-                receta: "Chocolate y Rosca de Reyes",
-                descripcion: "Frothy Mexican chocolate in a clay jug at boiling point, almost overflowing. Next to it, a colorful King's Cake. High tension atmosphere, steam everywhere, vibrant colors, close-up shot focusing on the bubbling surface of the chocolate.",
-                epigrafe: "Tita estaba como agua para chocolate, sintiendo que su paciencia estaba a punto de hervir."
-            },
-            {
-                nombre: "Octubre",
-                receta: "Torrejas de Natas",
-                descripcion: "Delicate syrup-soaked sweets on a fine china plate. Through a window, the hacienda garden is seen after a rainstorm with a peaceful rainbow. Soft, diffused lighting, a feeling of bittersweet relief.",
-                epigrafe: "Había momentos en que la dulzura de la cocina era el único refugio contra la amargura del mundo exterior."
-            },
-            {
-                nombre: "Noviembre",
-                receta: "Frijoles Tepeaca",
-                descripcion: "A Day of the Dead altar inside the hacienda. Thousands of orange cempasúchil flowers, candles, and bowls of beans. The air is thick with copal incense smoke. Spiritual, mystical, and ancestral atmosphere. Deep oranges and dark shadows.",
-                epigrafe: "La muerte no es triste cuando se ha amado con la intensidad con que Tita amaba sus recetas."
-            },
-            {
-                nombre: "Diciembre",
-                receta: "Chiles en Nogada",
-                descripcion: "A plate of Chiles en Nogada decorated with pomegranate seeds. The entire scene is starting to glow with a brilliant, supernatural white fire from within. A climactic, passionate, and final scene. The end of a legacy. Epic lighting.",
-                epigrafe: "En el momento en que sus cuerpos se fundieron, los miles de cerillos que Tita guardaba en su interior se encendieron al mismo tiempo."
-            }
+            { nombre: "Enero", receta: "Tortas de Navidad", prompt: "Oil painting style, vintage Mexican ranch kitchen 1910, piles of white onions, dramatic candlelight, Tita crying, masterpiece, magical realism", cita: "Tita lloraba desde el vientre porque sabía que su destino estaba ligado para siempre a la cebolla." },
+            { nombre: "Febrero", receta: "Pastel Chabela", prompt: "Oil painting, huge white tiered wedding cake, pink ethereal mist, melancholic atmosphere, vintage Mexican wedding, masterpiece", cita: "El pastel de bodas se mezcló con las lágrimas de Tita, contagiando a todos de una tristeza infinita." },
+            { nombre: "Marzo", receta: "Codornices en Pétalos de Rosas", prompt: "Oil painting, roasted quails with glowing pink rose sauce, rustic plate, sensual lighting, magical realism, masterpiece", cita: "El color rosado de la salsa era la transmutación de la pasión de Tita hacia Gertrudis." },
+            { nombre: "Abril", receta: "Mole de Guajolote", prompt: "Oil painting, dark rich mole sauce in clay pot, volcanic stone metate, smoke, rustic ranch, magical realism, warm tones", cita: "Tita ponía toda su alma en el metate, moliendo el cacao y los chiles con un ritmo sagrado." },
+            { nombre: "Mayo", receta: "Chorizo del Norte", prompt: "Oil painting, red chorizos hanging in dark wooden ranch kitchen, harsh shadows, Mamá Elena silhouette, Mexican revolution era", cita: "Mamá Elena vigilaba cada nudo del chorizo, como vigilaba cada pensamiento de Tita." },
+            { nombre: "Junio", receta: "Masa para hacer Fósforos", prompt: "Oil painting, glowing matchstick, golden magical sparks, soul fire, spiritual light, dark background, masterpiece", cita: "Nuestra alma necesita un detonador para encender esa caja de cerillos que todos llevamos dentro." },
+            { nombre: "Julio", receta: "Caldo de Colita de Res", prompt: "Oil painting, steaming bowl of soup, healing light, peaceful ranch kitchen, Chencha serving, magical realism, soft lighting", cita: "Con el primer vapor del caldo, el mudo silencio de su alma finalmente se rompió." },
+            { nombre: "Agosto", receta: "Champandongo", prompt: "Oil painting, complex layered Mexican meat dish, clay plate, rustic family table, secrets, 19th century ranch, masterpiece", cita: "Un plato de capas, como las capas de secretos que separaban a Tita de Pedro." },
+            { nombre: "Septiembre", receta: "Chocolate y Rosca de Reyes", prompt: "Oil painting, frothy Mexican chocolate in clay mug, wooden whisk, steam, anger, boiling point, magical realism style", cita: "Estar como agua para chocolate es estar en el punto exacto donde el hervor es inevitable." },
+            { nombre: "Octubre", receta: "Torrejas de Natas", prompt: "Oil painting, sweet golden dessert with cream, ray of light in a dark house, sweet refuge, classical Mexican still life, masterpiece", cita: "La dulzura de la nata era la única forma de soportar la rigidez de la casa de Mamá Elena." },
+            { nombre: "Noviembre", receta: "Frijoles Tepeaca", prompt: "Oil painting, beans in clay pot, Day of the Dead atmosphere, earthy tones, spiritual ranch life, magical realism", cita: "Incluso en el luto, el sabor de la tierra en los frijoles recordaba que la vida seguía." },
+            { nombre: "Diciembre", receta: "Chiles en Nogada", prompt: "Oil painting, Chiles en Nogada, pomegranate seeds like rubies, white cream sauce, fire of passion, liberation, masterpiece", cita: "El fuego final no fue un incendio, fue la liberación total de dos almas que se amaron en silencio." }
         ];
 
-        async function fetchImage(prompt) {
-            // Utilizamos el modelo de generación de imágenes más compatible con el entorno de Canvas
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-            const payload = { 
-                instances: [{ prompt: prompt }],
-                parameters: { sampleCount: 1 }
-            };
-            
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const res = await fetch(url, { 
-                        method: 'POST', 
-                        body: JSON.stringify(payload) 
-                    });
-                    
-                    if (res.status === 403) {
-                        // Si falla el modelo principal, intentamos con el modelo de respaldo inmediatamente
-                        return await fetchImageFallback(prompt);
-                    }
-
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    
-                    const data = await res.json();
-                    const base64 = data.predictions?.[0]?.bytesBase64Encoded;
-                    
-                    if (base64) {
-                        return `data:image/png;base64,${base64}`;
-                    }
-                } catch (e) {
-                    await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
-                }
+        function createPetals() {
+            const container = document.getElementById('global-petals');
+            container.innerHTML = ''; // Limpiar por si acaso
+            for (let i = 0; i < 50; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'rose-petal';
+                
+                // Valores aleatorios para variedad
+                const size = Math.random() * 8 + 10;
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
+                petal.style.left = Math.random() * 100 + 'vw';
+                
+                const duration = Math.random() * 5 + 7;
+                const delay = Math.random() * 10;
+                petal.style.animationDuration = `${duration}s`;
+                petal.style.animationDelay = `-${delay}s`; // Negativo para que ya estén cayendo al cargar
+                
+                container.appendChild(petal);
             }
-            return await fetchImageFallback(prompt);
         }
 
-        async function fetchImageFallback(prompt) {
-            // Modelo secundario por si el primero tiene restricciones de permisos (403)
+        async function generateIAImage(promptText) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
             const payload = { 
-                contents: [{ parts: [{ text: prompt }] }],
+                contents: [{ parts: [{ text: promptText }] }],
                 generationConfig: { responseModalities: ['IMAGE'] }
             };
-            
-            try {
-                const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await res.json();
-                const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-                if (base64) return `data:image/png;base64,${base64}`;
-            } catch (e) {
-                console.error("Fallback failed", e);
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                    const data = await res.json();
+                    const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                    if (base64) return `data:image/png;base64,${base64}`;
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
             }
             return null;
         }
 
-        function createCard(mes) {
-            const card = document.createElement('div');
-            card.className = "talavera-card p-6 flex flex-col";
-            card.innerHTML = `
-                <div class="mb-4 text-center">
-                    <span class="block text-xs font-bold text-blue-600 uppercase tracking-tighter mb-1">${mes.receta}</span>
-                    <h2 class="month-title text-3xl text-amber-950">${mes.nombre}</h2>
-                </div>
-                <div class="image-frame aspect-square mb-6 flex items-center justify-center shadow-inner">
-                    <div class="loader"></div>
-                </div>
-                <div class="mt-auto">
-                    <p class="text-sm italic text-gray-600 text-center leading-relaxed font-serif">
-                        "${mes.epigrafe}"
-                    </p>
-                </div>
-            `;
-            return card;
+        function enterApp() {
+            const hero = document.getElementById('hero-screen');
+            const heroBg = document.getElementById('hero-bg');
+            const heroContent = document.getElementById('hero-content');
+            const main = document.getElementById('main-content');
+            
+            heroContent.classList.add('slide-up-content');
+            heroBg.style.transform = 'translateY(-100%)';
+            
+            setTimeout(() => {
+                hero.classList.add('hidden');
+                main.classList.remove('hidden');
+                setTimeout(() => main.classList.remove('opacity-0'), 50);
+                renderAlmanaque();
+            }, 1000);
         }
 
-        async function startGeneration() {
+        async function renderAlmanaque() {
             const grid = document.getElementById('calendar-grid');
-            const btn = document.getElementById('generateBtn');
-            btn.disabled = true;
-            btn.innerText = "Cocinando Imágenes...";
-            grid.innerHTML = "";
-
-            for (const mes of meses) {
-                const card = createCard(mes);
+            
+            for (let i = 0; i < meses.length; i++) {
+                const mes = meses[i];
+                const card = document.createElement('div');
+                card.className = 'talavera-card';
+                card.innerHTML = `
+                    <div class="card-inner-border">
+                        <div class="image-container mb-6">
+                            <div class="absolute inset-0 flex items-center justify-center bg-gray-50" id="loader-box-${i}">
+                                <div class="loader-ia"></div>
+                            </div>
+                            <img id="img-${i}" class="opacity-0 transition-opacity duration-1000" alt="${mes.nombre}">
+                        </div>
+                        <div class="text-center">
+                            <span class="text-rose-400 font-bold text-[8px] uppercase tracking-[0.4em] mb-2 block">${mes.receta}</span>
+                            <h3 class="text-2xl text-gray-900 font-serif mb-4">${mes.nombre}</h3>
+                            <div class="divider"></div>
+                            <p class="text-[11px] italic text-gray-500 leading-relaxed font-serif px-1">
+                                "${mes.cita}"
+                            </p>
+                        </div>
+                    </div>
+                `;
                 grid.appendChild(card);
                 
-                const imgUrl = await fetchImage(mes.descripcion);
-                const frame = card.querySelector('.image-frame');
-                
-                if (imgUrl) {
-                    frame.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover gradual-reveal" alt="${mes.nombre}">`;
-                } else {
-                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-500 font-bold">La conexión es inestable. Intenta pulsar de nuevo en un momento.</div>`;
-                }
-                
-                await new Promise(r => setTimeout(r, 300));
+                setTimeout(() => card.classList.add('visible'), 150 * i);
+
+                generateIAImage(mes.prompt).then(url => {
+                    const img = document.getElementById(`img-${i}`);
+                    const loaderBox = document.getElementById(`loader-box-${i}`);
+                    if (url) {
+                        img.src = url;
+                        img.onload = () => {
+                            img.classList.remove('opacity-0');
+                            loaderBox.classList.add('hidden');
+                        };
+                    }
+                });
             }
-            
-            btn.innerText = "Almanaque Completo";
-            btn.disabled = false;
         }
 
-        document.getElementById('generateBtn').addEventListener('click', startGeneration);
+        window.onload = createPetals;
     </script>
 </body>
 </html>
