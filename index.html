@@ -158,15 +158,20 @@
         ];
 
         async function fetchImage(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-            const payload = { instances: [{ prompt }], parameters: { sampleCount: 1 } };
+            // Usando un modelo más estable para asegurar la generación
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            const payload = { 
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseModalities: ['IMAGE'] }
+            };
             
             for (let i = 0; i < 5; i++) {
                 try {
                     const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
                     const data = await res.json();
-                    if (data.predictions?.[0]?.bytesBase64Encoded) {
-                        return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+                    const base64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                    if (base64) {
+                        return `data:image/png;base64,${base64}`;
                     }
                 } catch (e) {
                     await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
@@ -212,14 +217,14 @@
                 if (imgUrl) {
                     frame.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover gradual-reveal" alt="${mes.nombre}">`;
                 } else {
-                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-400">La magia de la cocina falló. Intenta recargar.</div>`;
+                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-400">La magia falló. Prueba recargar la página o el botón.</div>`;
                 }
                 
-                // Pequeño delay para no saturar visualmente
-                await new Promise(r => setTimeout(r, 200));
+                await new Promise(r => setTimeout(r, 150));
             }
             
             btn.innerText = "Almanaque Finalizado";
+            btn.disabled = false;
         }
 
         document.getElementById('generateBtn').addEventListener('click', startGeneration);
