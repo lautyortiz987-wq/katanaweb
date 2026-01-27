@@ -1,234 +1,228 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  FolderOpen, 
-  FileCode, 
-  Cloud, 
-  User, 
-  Package, 
-  Plus, 
-  Trash2, 
-  Download, 
-  Settings,
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  Archive
-} from 'lucide-react';
-
-const App = () => {
-  const [activeTab, setActiveTab] = useState('editor');
-  const [projectName, setProjectName] = useState('mi-nuevo-pack');
-  const [category, setCategory] = useState('skins');
-  const [files, setFiles] = useState([]);
-  const [isExporting, setIsExporting] = useState(false);
-  const [log, setLog] = useState([]);
-
-  // Categorías comunes en FiveM
-  const categories = [
-    { id: 'skins', name: 'Skins / Ropa', icon: <User size={18} />, rpfName: 'clothes.rpf' },
-    { id: 'skies', name: 'Cielos / Visuals', icon: <Cloud size={18} />, rpfName: 'skydome.rpf' },
-    { id: 'weapons', name: 'Armas', icon: <Archive size={18} />, rpfName: 'weapons.rpf' },
-    { id: 'custom', name: 'Personalizado', icon: <Settings size={18} />, rpfName: 'custom_assets.rpf' },
-  ];
-
-  const addLog = (msg) => {
-    setLog(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev].slice(0, 10));
-  };
-
-  const handleFileUpload = (e) => {
-    const uploadedFiles = Array.from(e.target.files);
-    const newFiles = uploadedFiles.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: (file.size / 1024).toFixed(2) + ' KB',
-      type: file.name.split('.').pop()
-    }));
-    setFiles([...files, ...newFiles]);
-    addLog(`Archivos añadidos: ${uploadedFiles.length} detectados.`);
-  };
-
-  const removeFile = (id) => {
-    setFiles(files.filter(f => f.id !== id));
-  };
-
-  const simulateBuild = () => {
-    if (files.length === 0) {
-      addLog("Error: No hay archivos para procesar.");
-      return;
-    }
-    setIsExporting(true);
-    addLog("Iniciando proceso de empaquetado...");
-    
-    setTimeout(() => addLog("Generando estructura de carpetas de GTA V..."), 1000);
-    setTimeout(() => addLog(`Compilando ${categories.find(c => c.id === category).rpfName}...`), 2500);
-    setTimeout(() => addLog("Inyectando archivos en el contenedor RPF..."), 4000);
-    setTimeout(() => {
-      addLog("¡Proceso completado con éxito!");
-      setIsExporting(false);
-    }, 5500);
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 md:p-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almanaque: Como Agua para Chocolate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
         
-        {/* Sidebar de Configuración */}
-        <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Settings className="text-blue-400" /> Configuración del Pack
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Nombre del Recurso</label>
-                <input 
-                  type="text" 
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  placeholder="ej: mis_cielos_hd"
-                />
-              </div>
+        :root {
+            --mexican-blue: #0047ab;
+            --vintage-paper: #fdfaf6;
+        }
 
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Tipo de Contenido</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setCategory(cat.id)}
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                        category === cat.id 
-                        ? 'bg-blue-600/20 border-blue-500 text-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.3)]' 
-                        : 'bg-slate-900 border-slate-700 hover:border-slate-500 text-slate-400'
-                      }`}
-                    >
-                      {cat.icon}
-                      <span className="font-medium">{cat.name}</span>
-                      {category === cat.id && <CheckCircle2 size={16} className="ml-auto" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        body {
+            background-color: var(--vintage-paper);
+            font-family: 'Libre Baskerville', serif;
+            color: #2d241e;
+        }
 
-          {/* Consola de Proceso */}
-          <div className="bg-black/40 rounded-xl p-4 border border-slate-700 font-mono text-xs">
-            <h3 className="text-slate-500 mb-2 flex items-center gap-2 uppercase tracking-widest text-[10px]">
-              <FileCode size={14} /> Log del Sistema
-            </h3>
-            <div className="space-y-1 h-32 overflow-y-auto scrollbar-hide">
-              {log.length === 0 ? (
-                <span className="text-slate-600 italic">Esperando acciones...</span>
-              ) : (
-                log.map((entry, i) => (
-                  <div key={i} className={entry.includes('Error') ? 'text-red-400' : 'text-emerald-400'}>
-                    {entry}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </aside>
+        .talavera-card {
+            background: white;
+            border: 15px solid transparent;
+            border-image: url('https://www.transparenttextures.com/patterns/azulejo.png') 40 round;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease;
+        }
 
-        {/* Panel Principal de Archivos */}
-        <main className="lg:col-span-8 space-y-6">
-          <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col h-full min-h-[600px]">
-            <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
-              <div>
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  <FolderOpen className="text-yellow-400" /> Gestor de Archivos
-                </h2>
-                <p className="text-slate-400 text-sm">Arrastra los archivos .ydd, .ytd, .yft aquí</p>
-              </div>
-              <div className="flex gap-3">
-                <label className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors flex items-center gap-2 text-sm font-semibold">
-                  <Plus size={18} /> Añadir Archivos
-                  <input type="file" multiple className="hidden" onChange={handleFileUpload} />
-                </label>
-              </div>
-            </div>
+        .talavera-card:hover {
+            transform: translateY(-5px);
+        }
 
-            <div className="flex-grow p-6">
-              {files.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-500 border-2 border-dashed border-slate-700 rounded-xl">
-                  <Package size={48} className="mb-4 opacity-20" />
-                  <p>No hay archivos seleccionados para el RPF</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {files.map((file) => (
-                    <div key={file.id} className="bg-slate-900 p-4 rounded-xl border border-slate-700 flex items-center justify-between group hover:border-blue-500/50 transition-all">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-blue-500/10 p-2 rounded-lg text-blue-400">
-                          <FileCode size={20} />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium truncate max-w-[150px]">{file.name}</div>
-                          <div className="text-[10px] text-slate-500 uppercase font-bold">{file.type} • {file.size}</div>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => removeFile(file.id)}
-                        className="text-slate-600 hover:text-red-400 p-2 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        h1, h2, .month-title {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.02em;
+        }
 
-            <div className="p-6 bg-slate-900/50 border-t border-slate-700 flex items-center justify-between">
-              <div className="flex items-center gap-4 text-sm text-slate-400">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                  {files.length} Archivos
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                  {projectName}.rpf
-                </div>
-              </div>
+        .image-frame {
+            position: relative;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            background: #f3f4f6;
+        }
 
-              <button 
-                onClick={simulateBuild}
-                disabled={isExporting}
-                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold transition-all shadow-lg ${
-                  isExporting 
-                  ? 'bg-slate-700 cursor-not-allowed text-slate-400' 
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white hover:scale-105 active:scale-95'
-                }`}
-              >
-                {isExporting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Procesando...
-                  </>
-                ) : (
-                  <>
-                    <Download size={20} />
-                    Generar RPF y Manifest
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--mexican-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
 
-          {/* Tips Info */}
-          <div className="bg-blue-600/10 border border-blue-500/30 p-4 rounded-xl flex gap-4 items-start">
-            <AlertCircle className="text-blue-400 shrink-0" size={20} />
-            <div className="text-sm">
-              <span className="text-blue-200 font-bold">Consejo:</span> Esta herramienta genera automáticamente el archivo <code className="bg-blue-900/40 px-1 rounded text-blue-300">fxmanifest.lua</code> con la versión de motor <code className="text-blue-300 italic">'cerulean'</code> y los metadatos de streaming necesarios para que FiveM reconozca tus archivos.
-            </div>
-          </div>
-        </main>
-      </div>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .gradual-reveal {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <header class="max-w-4xl mx-auto text-center mb-16">
+        <span class="text-blue-700 font-bold tracking-widest uppercase text-sm mb-2 block">Proyecto de Literatura: Realismo Mágico</span>
+        <h1 class="text-5xl md:text-7xl text-amber-950 mb-6">Como Agua para Chocolate</h1>
+        <div class="h-1 w-32 bg-amber-800 mx-auto mb-6"></div>
+        <p class="text-lg text-amber-900 max-w-2xl mx-auto leading-relaxed italic">
+            "Un viaje a través de los doce meses donde los ingredientes dictan el destino del corazón."
+        </p>
+        <button id="generateBtn" class="mt-10 bg-blue-800 text-white px-10 py-4 rounded-sm hover:bg-blue-950 transition-all shadow-xl font-bold uppercase tracking-widest text-sm">
+            Iniciar Secuencia del Almanaque
+        </button>
+    </header>
+
+    <div id="calendar-grid" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <!-- Los meses se inyectarán aquí -->
     </div>
-  );
-};
 
-export default App;
+    <script>
+        const apiKey = ""; 
+
+        const meses = [
+            {
+                nombre: "Enero",
+                receta: "Tortas de Navidad",
+                descripcion: "Cinematic close-up of a young Tita in a 19th-century Mexican kitchen. Soft golden morning light through a window. She is intensely crying over a wooden table covered in a mountain of chopped white onions. The tears are crystalline and glowing. Realistic oil painting style, warm earthy tones, magical realism atmosphere.",
+                epigrafe: "Dicen que Tita era tan sensible a la cebolla que desde que estaba en el vientre de mi bisabuela lloraba y lloraba..."
+            },
+            {
+                nombre: "Febrero",
+                receta: "Pastel Chabela",
+                descripcion: "A monumental white tiered wedding cake at a celebration. A supernatural mist of 'nostalgia' flows from the cake slices. In the blurred background, wedding guests are visibly weeping with profound sadness. Moody lighting, desaturated colors, surreal atmosphere, high detail.",
+                epigrafe: "En el momento en que probaron el pastel, un sentimiento de inmensa nostalgia se adueñó de todos los presentes."
+            },
+            {
+                nombre: "Marzo",
+                receta: "Codornices en Pétalos de Rosas",
+                descripcion: "Exotic dish of quails in a brilliant fuchsia rose petal sauce. A mystical pink aura emanates from the plate. Ethereal rose petals floating in the air. Sensual and vibrant atmosphere, dramatic lighting, rich textures, Mexican folk art influence.",
+                epigrafe: "Parecía que el alimento que estaba ingiriendo tenía efectos afrodisíacos, pues Gertrudis empezó a sentir un calor interno."
+            },
+            {
+                nombre: "Abril",
+                receta: "Mole de Guajolote",
+                descripcion: "Traditional Mexican outdoor kitchen. A large clay pot bubbling with dark, glossy mole. Intricate steam patterns rising. A sense of family tension in the air. Earthy color palette: chocolate, terracotta, and deep gold. Authentic 19th century setting.",
+                epigrafe: "Tita sabía muy bien que el secreto de un buen mole reside en la paciencia con que se muelen los ingredientes."
+            },
+            {
+                nombre: "Mayo",
+                receta: "Chorizo del Norte",
+                descripcion: "Stern hands of Mamá Elena tying rows of red chorizo in a cool, dark larder. Sharp shafts of light cutting through the darkness, illuminating dust motes. A feeling of rigid authority and cold discipline. High contrast photography style.",
+                epigrafe: "Para Mamá Elena, el orden y la disciplina eran la base de cualquier actividad, incluida la cocina."
+            },
+            {
+                nombre: "Junio",
+                receta: "Masa para hacer Fósforos",
+                descripcion: "Macro shot of an antique wooden matchbox. One single match is burning with a blinding, divine golden light that illuminates the surrounding darkness. The flame seems to contain a miniature galaxy. Metaphysical and spiritual lighting.",
+                epigrafe: "Si una emoción fuerte enciende todos los cerillos que llevamos por dentro, un resplandor superior nos mostrará el camino."
+            },
+            {
+                nombre: "Julio",
+                receta: "Caldo de Colita de Res",
+                descripcion: "A humble bowl of steaming clear broth on a rustic table. The steam delicately forms the shape of comforting ghost-like hands embracing the bowl. Soft blue and white light, sense of peace, healing and spiritual restoration.",
+                epigrafe: "Tita tomó la cuchara y al probar el primer sorbo de caldo, sintió que el alma le volvía al cuerpo."
+            },
+            {
+                nombre: "Agosto",
+                receta: "Champandongo",
+                descripcion: "A complex multi-layered dish of meat, tortillas and cream. The composition uses a forced perspective to show the 'layers' of Tita's complex emotions. Rich culinary textures, vibrant but cluttered, reflecting internal chaos.",
+                epigrafe: "El champandongo es un plato refinado, pero requiere de una armonía total para no resultar indigesto."
+            },
+            {
+                nombre: "Septiembre",
+                receta: "Chocolate y Rosca de Reyes",
+                descripcion: "Frothy Mexican chocolate in a clay jug at boiling point, almost overflowing. Next to it, a colorful King's Cake. High tension atmosphere, steam everywhere, vibrant colors, close-up shot focusing on the bubbling surface of the chocolate.",
+                epigrafe: "Tita estaba como agua para chocolate, sintiendo que su paciencia estaba a punto de hervir."
+            },
+            {
+                nombre: "Octubre",
+                receta: "Torrejas de Natas",
+                descripcion: "Delicate syrup-soaked sweets on a fine china plate. Through a window, the hacienda garden is seen after a rainstorm with a peaceful rainbow. Soft, diffused lighting, a feeling of bittersweet relief.",
+                epigrafe: "Había momentos en que la dulzura de la cocina era el único refugio contra la amargura del mundo exterior."
+            },
+            {
+                nombre: "Noviembre",
+                receta: "Frijoles Tepeaca",
+                descripcion: "A Day of the Dead altar inside the hacienda. Thousands of orange cempasúchil flowers, candles, and bowls of beans. The air is thick with copal incense smoke. Spiritual, mystical, and ancestral atmosphere. Deep oranges and dark shadows.",
+                epigrafe: "La muerte no es triste cuando se ha amado con la intensidad con que Tita amaba sus recetas."
+            },
+            {
+                nombre: "Diciembre",
+                receta: "Chiles en Nogada",
+                descripcion: "A plate of Chiles en Nogada decorated with pomegranate seeds. The entire scene is starting to glow with a brilliant, supernatural white fire from within. A climactic, passionate, and final scene. The end of a legacy. Epic lighting.",
+                epigrafe: "En el momento en que sus cuerpos se fundieron, los miles de cerillos que Tita guardaba en su interior se encendieron al mismo tiempo."
+            }
+        ];
+
+        async function fetchImage(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+            const payload = { instances: [{ prompt }], parameters: { sampleCount: 1 } };
+            
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                    const data = await res.json();
+                    if (data.predictions?.[0]?.bytesBase64Encoded) {
+                        return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+                    }
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+                }
+            }
+            return null;
+        }
+
+        function createCard(mes) {
+            const card = document.createElement('div');
+            card.className = "talavera-card p-6 flex flex-col";
+            card.innerHTML = `
+                <div class="mb-4 text-center">
+                    <span class="block text-xs font-bold text-blue-600 uppercase tracking-tighter mb-1">${mes.receta}</span>
+                    <h2 class="month-title text-3xl text-amber-950">${mes.nombre}</h2>
+                </div>
+                <div class="image-frame aspect-square mb-6 flex items-center justify-center shadow-inner">
+                    <div class="loader"></div>
+                </div>
+                <div class="mt-auto">
+                    <p class="text-sm italic text-gray-600 text-center leading-relaxed font-serif">
+                        "${mes.epigrafe}"
+                    </p>
+                </div>
+            `;
+            return card;
+        }
+
+        async function startGeneration() {
+            const grid = document.getElementById('calendar-grid');
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerText = "Preparando Banquete Visual...";
+            grid.innerHTML = "";
+
+            for (const mes of meses) {
+                const card = createCard(mes);
+                grid.appendChild(card);
+                
+                const imgUrl = await fetchImage(mes.descripcion);
+                const frame = card.querySelector('.image-frame');
+                
+                if (imgUrl) {
+                    frame.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover gradual-reveal" alt="${mes.nombre}">`;
+                } else {
+                    frame.innerHTML = `<div class="p-4 text-center text-xs text-red-400">La magia de la cocina falló. Intenta recargar.</div>`;
+                }
+                
+                // Pequeño delay para no saturar visualmente
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            btn.innerText = "Almanaque Finalizado";
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', startGeneration);
+    </script>
+</body>
+</html>
