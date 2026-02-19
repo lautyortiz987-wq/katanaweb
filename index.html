@@ -3,408 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almanaque: Como Agua para Chocolate</title>
+    <title>Pizarra Policial: Caso Tuya - Investigación Avanzada</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;1,900&display=swap');
-        
         :root {
-            --rose-color: #fb7185;
-            --cream: #ffffff;
+            --cork: #2d1e16;
+            --color-crimen: #ef4444;
+            --color-pista: #3b82f6;
+            --color-secreto: #10b981;
+            --color-hipotesis: #f59e0b;
+            --color-amenaza: #a855f7;
+            --paper-old: #d4c4a8;
         }
-
-        body {
-            background-color: var(--cream);
-            font-family: 'Libre Baskerville', serif;
-            color: #1a1a1a;
+        body, html {
             margin: 0;
-            overflow-x: hidden;
-        }
-
-        #global-petals {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 100;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
+            background-color: var(--cork);
+            background-image: url('https://www.transparenttextures.com/patterns/cork-board.png');
+            font-family: 'Inter', sans-serif;
+        }
+        .police-font { font-family: 'Special Elite', cursive; }
+        
+        #board {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
         }
 
-        .rose-petal {
+        .item {
             position: absolute;
-            background: var(--rose-color);
-            border-radius: 150% 0 150% 50%;
-            opacity: 0.2;
-            animation: fall linear infinite;
+            cursor: grab;
+            z-index: 20;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .item:active { cursor: grabbing; z-index: 100 !important; }
+        .item:hover { transform: scale(1.05) rotate(0deg) !important; z-index: 50; }
 
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
-        }
-
-        .char {
-            display: inline-block;
+        /* Tooltips */
+        .tooltip {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            width: 200px;
+            text-align: center;
             opacity: 0;
-            transform: translateY(30px) scale(0.9);
-            filter: blur(10px);
-            animation: revealChar 0.8s forwards;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+            z-index: 60;
+        }
+        .item:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        @keyframes revealChar {
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-        }
-
-        #admin-panel {
-            position: fixed;
-            inset: 0;
-            background: #fdfdfc;
-            z-index: 2000;
-            display: none;
-            grid-template-columns: 350px 1fr;
-        }
-
-        .admin-sidebar {
-            background: white;
-            border-right: 1px solid #eee;
-            padding: 3rem 2rem;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.02);
-        }
-
-        .admin-main {
-            padding: 4rem;
-            overflow-y: auto;
-            background: #f9f8f7;
-        }
-
-        .drop-zone {
-            width: 100%;
-            aspect-ratio: 16/9;
+        /* Polaroid */
+        .polaroid {
             background: #fff;
-            border: 1px dashed #ddd;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.3s;
+            padding: 10px 10px 40px 10px;
+            box-shadow: 5px 10px 20px rgba(0,0,0,0.6);
+            width: 155px;
+            border: 1px solid #ddd;
+        }
+        .polaroid img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            filter: grayscale(0.4) sepia(0.2);
+            pointer-events: none;
+        }
+        .polaroid .label {
+            font-family: 'Special Elite';
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+            line-height: 1.2;
+            color: #000;
         }
 
-        .drop-zone:hover { border-color: var(--rose-color); background: #fffafa; }
+        /* Notas Post-it */
+        .note {
+            background: #feff9c;
+            padding: 12px;
+            width: 195px;
+            box-shadow: 4px 6px 12px rgba(0,0,0,0.4);
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #000;
+            border-bottom-right-radius: 40px 10px;
+        }
+        .note.blue { background: #b6e0ff; }
+        .note.pink { background: #ffc2cc; }
+        .note.green { background: #c2f0c1; }
+        .note.orange { background: #ffd8a8; }
 
-        .admin-toggle {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            z-index: 1001;
-            background: white;
-            width: 48px;
-            height: 48px;
+        /* Etiquetas de Evidencia */
+        .evidence-tag {
+            background: #ffffff;
+            border-left: 8px solid var(--color-crimen);
+            padding: 8px;
+            font-family: 'Special Elite';
+            font-size: 10px;
+            width: 160px;
+            box-shadow: 4px 6px 10px rgba(0,0,0,0.4);
+            color: #000;
+        }
+
+        /* MEJORA: Mapa Realista */
+        .map-container {
+            background-color: var(--paper-old);
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/paper.png'),
+                linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02) 75%, transparent 75%, transparent);
+            background-size: auto, 4px 4px;
+            border: 12px solid #1a202c;
+            width: 480px;
+            height: 320px;
+            border-radius: 2px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 60px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            border-image: url('https://www.transparenttextures.com/patterns/dark-matter.png') 30 stretch;
+        }
+
+        .map-blueprint {
+            position: absolute;
+            inset: 15px;
+            border: 1px solid rgba(0,0,0,0.15);
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .map-urban-shape {
+            position: absolute;
+            background: rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .street-label {
+            position: absolute;
+            font-size: 8px;
+            text-transform: uppercase;
+            color: rgba(0,0,0,0.4);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .map-ink-note {
+            position: absolute;
+            font-family: 'Special Elite';
+            font-size: 9px;
+            color: #444;
+            transform: rotate(-5deg);
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .location-dot {
+            width: 14px; height: 14px;
+            background: #b91c1c;
+            border: 2px solid white;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: absolute;
+            z-index: 50;
+            box-shadow: 0 0 10px rgba(185, 28, 28, 0.5);
             cursor: pointer;
-            border: 1px solid #f0f0f0;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-        .admin-toggle:hover { transform: rotate(90deg) scale(1.1); }
-
-        .public-card {
-            background: white;
-            padding: 3rem;
-            border: 1px solid #f5f5f5;
-            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        .location-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #b91c1c;
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
         }
 
-        .public-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.06);
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
         }
 
-        .hidden { display: none !important; }
-        .fade-out { opacity: 0; pointer-events: none; transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1); }
+        /* Hilos Animados */
+        .animated-thread {
+            stroke-dasharray: 8;
+            animation: flow 30s linear infinite;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+        }
+        @keyframes flow { to { stroke-dashoffset: -200; } }
 
-        #status-toast {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 1rem;
-            background: #1a1a1a;
-            color: white;
-            font-size: 12px;
-            z-index: 3000;
-            display: none;
-            animation: fadeInRight 0.5s;
+        #thread-layer {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 5;
+        }
+
+        .pin {
+            width: 14px; height: 14px;
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #8b0000);
+            border-radius: 50%;
+            position: absolute; top: -7px; left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            z-index: 55;
+        }
+
+        .footer {
+            position: fixed; bottom: 0;
+            width: 100%; height: 50px;
+            background: #0e0e0e;
+            border-top: 4px solid #b91c1c;
+            display: flex; align-items: center;
+            padding: 0 30px; justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            font-size: 9px;
+            color: #aaa;
+            font-family: 'Special Elite';
         }
     </style>
 </head>
 <body>
 
-    <div id="status-toast"></div>
-    <div id="global-petals"></div>
+    <div id="board">
+        <svg id="thread-layer">
+            <g id="connections"></g>
+        </svg>
 
-    <div class="admin-toggle" onclick="toggleAdmin()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-    </div>
+        <!-- TITULO -->
+        <div class="absolute top-4 left-0 w-full text-center z-0">
+            <h1 class="police-font text-3xl text-red-600 font-black tracking-[8px] opacity-80">ANÁLISIS LITERARIO: CASO TUYA</h1>
+            <p class="police-font text-white/50 text-xs mt-1">Expediente #942 - Conexiones, Silencios y Posesión</p>
+        </div>
 
-    <div id="admin-panel">
-        <aside class="admin-sidebar">
-            <h2 class="text-4xl font-serif text-rose-500 mb-4">Curaduría</h2>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-12">Publicación Directa</p>
-            
-            <div class="space-y-6 mt-auto">
-                <div class="p-6 bg-stone-50 rounded-3xl border border-stone-100">
-                    <p class="text-[9px] font-bold text-gray-400 mb-2 uppercase tracking-widest">Estado de Conexión</p>
-                    <p id="repo-status" class="text-[10px] text-gray-500 italic">Configura tu repositorio abajo:</p>
-                    <input type="text" id="gh-repo" placeholder="usuario/nombre-repo" class="w-full text-xs p-3 mt-4 rounded-xl border border-gray-200 outline-none focus:border-rose-300">
+        <!-- EJE CENTRAL: MAPA MEJORADO -->
+        <div id="map-section" class="item" style="top: 25%; left: 32%;">
+            <div class="map-container">
+                <div class="pin"></div>
+                <div class="map-blueprint">
+                    <!-- Formas urbanas ficticias para realismo -->
+                    <div class="map-urban-shape" style="top: 20%; left: 10%; width: 60px; height: 100px;"></div>
+                    <div class="map-urban-shape" style="top: 15%; left: 60%; width: 120px; height: 40px;"></div>
+                    <div class="map-urban-shape" style="top: 55%; left: 40%; width: 80px; height: 80px;"></div>
+                    <div class="map-urban-shape" style="top: 70%; left: 15%; width: 40px; height: 50px;"></div>
+                    
+                    <!-- Etiquetas de calles -->
+                    <div class="street-label" style="top: 45%; left: 15%; transform: rotate(-90deg);">Av. Santa Fe</div>
+                    <div class="street-label" style="top: 35%; left: 55%;">Calle Libertad</div>
+                    <div class="street-label" style="top: 85%; left: 45%;">Parque Central</div>
+
+                    <!-- Notas de investigador -->
+                    <div class="map-ink-note" style="top: 10%; right: 20%;">Área de escape</div>
+                    <div class="map-ink-note" style="bottom: 15%; left: 5%;">¿Visto por última vez?</div>
+                    
+                    <!-- Puntos de Interés -->
+                    <div class="location-dot" style="top: 30%; left: 65%;" title="Casa Alicia"></div>
+                    <div class="location-dot" style="top: 65%; left: 35%;" title="Lugar del Incidente"></div>
+                    <div class="location-dot" style="top: 85%; left: 75%;" title="Consultorio Médico"></div>
                 </div>
-                <!-- Token oculto internamente para que no lo pida -->
-                <input type="hidden" id="gh-token" value="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">
-                
-                <button id="publish-btn" onclick="publishToGithub()" class="w-full bg-rose-500 text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all shadow-xl shadow-rose-100 flex items-center justify-center gap-2">
-                    <span>Publicar Cambios</span>
-                </button>
-                <button onclick="toggleAdmin()" class="w-full bg-black text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Cerrar Editor</button>
-            </div>
-        </aside>
 
-        <main class="admin-main">
-            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10" id="admin-grid"></div>
-        </main>
+                <div class="absolute bottom-0 w-full bg-slate-900/90 text-white p-2 police-font text-[10px] flex justify-between backdrop-blur-sm">
+                    <span>CARTOGRAFÍA DEL CRIMEN - SECTOR 7</span>
+                    <span class="bg-red-700 px-2 uppercase font-bold text-[9px] tracking-tighter">CONFIDENCIAL</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERSONAJES PRINCIPALES -->
+        <div id="ines" class="item polaroid" style="top: 8%; left: 4%; transform: rotate(-2deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400" alt="Inés">
+            <div class="label">INÉS PEREYRA<br><span class="text-red-600 text-[9px]">DISEÑADORA DEL PLAN</span></div>
+            <div class="tooltip">No limpia el crimen por amor, sino por estatus. Ernesto es su propiedad.</div>
+        </div>
+
+        <div id="ernesto" class="item polaroid" style="top: 8%; left: 21%; transform: rotate(1deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400" alt="Ernesto">
+            <div class="label">ERNESTO<br><span class="text-blue-600 text-[9px]">EL ASESINO PASIVO</span></div>
+            <div class="tooltip">Se deja arrastrar por el plan de Inés para evitar la cárcel. Cobarde por naturaleza.</div>
+        </div>
+
+        <div id="alicia" class="item polaroid" style="top: 8%; right: 21%; transform: rotate(2deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400" alt="Alicia">
+            <div class="label">ALICIA<br><span class="text-gray-500 text-[9px]">EL OBJETO "TUYA"</span></div>
+            <div class="tooltip">Su muerte es el motor que desnuda la hipocresía familiar. Representaba la libertad de Ernesto.</div>
+        </div>
+
+        <div id="charo" class="item polaroid" style="top: 8%; right: 4%; transform: rotate(-2deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400" alt="Charo">
+            <div class="label">CHARO<br><span class="text-purple-600 text-[9px]">LA AMENAZA REAL</span></div>
+            <div class="tooltip">Investiga por su cuenta. Representa la justicia frente a la "limpieza" de Inés.</div>
+        </div>
+
+        <!-- PERSONAJES SECUNDARIOS -->
+        <div id="lali" class="item polaroid" style="bottom: 12%; left: 28%; transform: rotate(-1deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" alt="Lali">
+            <div class="label">LALI PEREYRA<br><span class="text-green-700 text-[9px]">VÍCTIMA INVISIBLE</span></div>
+            <div class="tooltip">Su soledad es la prueba del fracaso del hogar Pereyra.</div>
+        </div>
+
+        <div id="medico" class="item polaroid" style="bottom: 12%; left: 45%; transform: rotate(2deg);">
+            <div class="pin"></div>
+            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400" alt="Médico">
+            <div class="label">DR. OBSTETRA<br><span class="text-green-500 text-[9px]">EL CONFIDENTE</span></div>
+            <div class="tooltip">Sabe lo que los padres ignoran por su narcisismo.</div>
+        </div>
+
+        <!-- NUEVAS NOTAS SOBRE EL TRIÁNGULO -->
+        <div id="h_triangulo" class="item note orange" style="top: 35%; left: 4%; transform: rotate(2deg);">
+            <p class="police-font text-red-900 font-bold mb-1 text-[10px]">POSESIÓN Y CONTROL</p>
+            <p>Inés ve a Ernesto como un activo, no como un esposo. Eliminar a Alicia es una "reparación de daños" en su propiedad.</p>
+        </div>
+
+        <div id="h_ernesto_alicia" class="item note blue" style="top: 35%; left: 20%; transform: rotate(-1deg);">
+            <p class="police-font text-blue-900 font-bold mb-1 text-[10px]">ERNESTO: EL COBARDE</p>
+            <p>Ernesto amaba a Alicia por su sumisión, pero le teme a Inés por su capacidad de ejecución. Alicia era su escape; Inés es su celda.</p>
+        </div>
+
+        <!-- HIPÓTESIS ORIGINALES -->
+        <div id="h1" class="item note orange" style="top: 35%; right: 4%; transform: rotate(3deg);">
+            <p class="police-font text-purple-900 font-bold mb-1 text-[10px]">HIPÓTESIS: CHARO VS INÉS</p>
+            <p>Charo es el antagonista moral. Mientras Inés destruye evidencia, Charo busca reconstruir la vida de Alicia.</p>
+        </div>
+
+        <div id="h2" class="item note orange" style="top: 60%; right: 4%; transform: rotate(-1deg);">
+            <p class="police-font text-red-900 font-bold mb-1 text-[10px]">EL RIESGO DE CHARO</p>
+            <p>Si Charo encuentra el encendedor, el plan de Inés colapsa. Es el único cabo suelto.</p>
+        </div>
+
+        <div id="h3" class="item note green" style="bottom: 12%; left: 5%; transform: rotate(-2deg);">
+            <p class="police-font text-green-900 font-bold mb-1 text-[10px]">HIPÓTESIS: EL MÉDICO</p>
+            <p>El médico funciona como el "oído" que Lali no tiene en casa. Subraya el aislamiento afectivo.</p>
+        </div>
+
+        <!-- EVIDENCIAS -->
+        <div id="ev1" class="item evidence-tag" style="top: 55%; left: 4%; transform: rotate(-1deg);">
+            <p class="font-bold border-b border-black/20 mb-1 uppercase text-red-700 text-[8px]">EVIDENCIA</p>
+            <p class="font-bold">CARTA "TUYA"</p>
+            <p class="italic text-[9px]">El fetiche de la exclusividad.</p>
+        </div>
+
+        <div id="ev2" class="item evidence-tag" style="top: 70%; left: 4%; transform: rotate(2deg);">
+            <p class="font-bold border-b border-black/20 mb-1 uppercase text-red-700 text-[8px]">EVIDENCIA</p>
+            <p class="font-bold">EL ENCENDEDOR</p>
+            <p class="italic text-[9px]">Olvidado en el lugar del crimen.</p>
+        </div>
+
+        <div id="ev3" class="item evidence-tag" style="top: 55%; left: 20%; transform: rotate(-2deg);">
+            <p class="font-bold border-b border-black/20 mb-1 uppercase text-blue-700 text-[8px]">EVIDENCIA</p>
+            <p class="font-bold">AGENDA DE ERNESTO</p>
+            <p class="italic text-[9px]">Citas ocultas con "A".</p>
+        </div>
+
+        <!-- ANÁLISIS FINAL -->
+        <div id="n_final" class="item note pink" style="bottom: 12%; right: 5%; transform: rotate(1deg);">
+            <p class="police-font text-red-800 font-bold mb-1 text-[10px]">CONCLUSIÓN NEGRA</p>
+            <p>En el mundo de Piñeiro, la verdad no libera; la verdad es una moneda de cambio para el poder doméstico.</p>
+        </div>
+
     </div>
 
-    <div id="hero-screen" class="h-screen w-full flex flex-col items-center justify-center text-center fixed inset-0 z-50 bg-white transition-all duration-1000">
-        <div class="px-6 relative z-10 max-w-5xl">
-            <div class="mb-12 opacity-0 animate__animated animate__fadeIn">
-                <span class="text-gray-300 uppercase tracking-[1.2em] text-[9px] font-bold">Un Ciclo Ritual de Laura Esquivel</span>
-            </div>
-            <h1 id="animated-title" class="hero-title text-6xl md:text-[120px] mb-14 leading-none"></h1>
-            <p class="text-gray-400 italic text-xl md:text-2xl mb-24 font-serif leading-relaxed opacity-0 animate__animated animate__fadeIn animate__delay-1s max-w-2xl mx-auto">
-                "Estar como agua para chocolate es estar a punto de hervir, de explotar, de amar."
-            </p>
-            <button onclick="enterApp()" class="group px-20 py-7 border border-gray-900 relative overflow-hidden transition-all duration-700 hover:border-rose-400 opacity-0 animate__animated animate__fadeInUp animate__delay-1s">
-                <span class="relative z-10 font-bold uppercase tracking-[0.6em] text-[11px] group-hover:text-white transition-colors">Entrar al Ritual</span>
-                <div class="absolute inset-0 bg-gray-900 transform translate-x-[-101%] group-hover:translate-x-0 transition-transform duration-700 ease-in-out"></div>
-            </button>
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="text-white police-font text-lg font-bold tracking-widest flex items-center gap-3">
+            <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+            PIZARRA: INVESTIGACIÓN COMPLETA
+        </div>
+        <div class="legend">
+            <div class="flex items-center"><span class="w-3 h-0.5 bg-red-600 mr-1"></span> TRIÁNGULO</div>
+            <div class="flex items-center"><span class="w-3 h-0.5 bg-purple-500 mr-1"></span> AMENAZA/CHARO</div>
+            <div class="flex items-center"><span class="w-3 h-0.5 bg-green-500 mr-1"></span> SECRETO/LALI</div>
+            <div class="flex items-center"><span class="w-3 h-0.5 bg-orange-400 mr-1"></span> HIPÓTESIS</div>
         </div>
     </div>
 
-    <main id="main-content" class="hidden opacity-0 p-8 md:p-32 max-w-7xl mx-auto transition-opacity duration-1000 relative z-10">
-        <header class="text-center mb-48">
-            <h2 class="text-7xl md:text-[110px] font-serif italic mb-10 text-stone-800">El Ciclo de Tita</h2>
-            <div class="h-[1px] w-48 bg-rose-300 mx-auto"></div>
-        </header>
-        <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24"></div>
-    </main>
-
     <script>
-        const MASTER_TOKEN = "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";
-        
-        let stockData = {
-            meses: [
-                { id: 0, nombre: "Enero", receta: "Tortas de Navidad", cita: "Tita lloraba desde el vientre por el destino ligado a la cebolla.", img: null },
-                { id: 1, nombre: "Febrero", receta: "Pastel Chabela", cita: "Las lágrimas de Tita contagiaron de tristeza infinita a los invitados.", img: null },
-                { id: 2, nombre: "Marzo", receta: "Codornices en Pétalos", cita: "La pasión se transmutó en el color rosado de la salsa.", img: null },
-                { id: 3, nombre: "Abril", receta: "Mole de Guajolote", cita: "Moliendo el cacao con un ritmo sagrado para encender el alma.", img: null },
-                { id: 4, nombre: "Mayo", receta: "Chorizo del Norte", cita: "Mama Elena vigilaba cada nudo como cada pensamiento.", img: null },
-                { id: 5, nombre: "Junio", receta: "Masa para Fósforos", cita: "Todos tenemos una caja de cerillos en nuestro interior.", img: null },
-                { id: 6, nombre: "Julio", receta: "Caldo de Colita", cita: "El primer vapor rompió el mudo silencio de su alma.", img: null },
-                { id: 7, nombre: "Agosto", receta: "Champandongo", cita: "Capas de comida como capas de secretos prohibidos.", img: null },
-                { id: 8, nombre: "Septiembre", receta: "Chocolate y Rosca", cita: "Estar como agua para chocolate es estar a punto de hervir.", img: null },
-                { id: 9, nombre: "Octubre", receta: "Torrejas de Natas", cita: "La dulzura era el único refugio contra la amargura del mundo.", img: null },
-                { id: 10, nombre: "Noviembre", receta: "Frijoles Tepeaca", cita: "La muerte no es triste cuando se ha amado con intensidad.", img: null },
-                { id: 11, nombre: "Diciembre", receta: "Chiles en Nogada", cita: "El fuego final fue la liberación total de dos almas amadas.", img: null }
-            ]
+        const connectionsContainer = document.getElementById('connections');
+        const board = document.getElementById('board');
+        let activeItem = null;
+        let offset = { x: 0, y: 0 };
+
+        const links = [
+            { from: 'ines', to: 'ernesto', color: '#ef4444' },
+            { from: 'ernesto', to: 'alicia', color: '#3b82f6' },
+            { from: 'ines', to: 'alicia', color: '#ef4444' },
+            { from: 'ines', to: 'h_triangulo', color: '#fb923c' },
+            { from: 'ernesto', to: 'h_ernesto_alicia', color: '#fb923c' },
+            { from: 'ernesto', to: 'ev3', color: '#3b82f6' },
+            { from: 'alicia', to: 'charo', color: '#a855f7' },
+            { from: 'charo', to: 'h1', color: '#fb923c' },
+            { from: 'charo', to: 'h2', color: '#fb923c' },
+            { from: 'h2', to: 'ev2', color: '#a855f7' },
+            { from: 'lali', to: 'ines', color: '#10b981' },
+            { from: 'lali', to: 'medico', color: '#10b981' },
+            { from: 'medico', to: 'h3', color: '#fb923c' },
+            { from: 'map-section', to: 'ernesto', color: '#666' },
+            { from: 'h1', to: 'ines', color: '#a855f7' }
+        ];
+
+        function drawConnections() {
+            connectionsContainer.innerHTML = '';
+            links.forEach(({from, to, color}) => {
+                const el1 = document.getElementById(from);
+                const el2 = document.getElementById(to);
+                if (el1 && el2) {
+                    const r1 = el1.getBoundingClientRect();
+                    const r2 = el2.getBoundingClientRect();
+                    const x1 = r1.left + r1.width/2;
+                    const y1 = r1.top + r1.height/2;
+                    const x2 = r2.left + r2.width/2;
+                    const y2 = r2.top + r2.height/2;
+
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+                    line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+                    line.setAttribute("stroke", color);
+                    line.setAttribute("stroke-width", "2");
+                    line.setAttribute("class", "animated-thread");
+                    connectionsContainer.appendChild(line);
+                }
+            });
+        }
+
+        document.addEventListener('mousedown', e => {
+            const item = e.target.closest('.item');
+            if (item) {
+                activeItem = item;
+                const rect = item.getBoundingClientRect();
+                offset.x = e.clientX - rect.left;
+                offset.y = e.clientY - rect.top;
+                item.style.zIndex = 1000;
+                item.style.transition = 'none';
+            }
+        });
+
+        document.addEventListener('mousemove', e => {
+            if (!activeItem) return;
+            activeItem.style.left = (e.clientX - offset.x) + 'px';
+            activeItem.style.top = (e.clientY - offset.y) + 'px';
+            drawConnections();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (activeItem) {
+                activeItem.style.zIndex = 20;
+                activeItem.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                activeItem = null;
+            }
+        });
+
+        window.onload = () => {
+            drawConnections();
+            setTimeout(drawConnections, 100);
         };
-
-        const iconPlaceholder = `<svg width="32" height="32" fill="none" stroke="#ddd" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
-
-        function showToast(msg) {
-            const toast = document.getElementById('status-toast');
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 4000);
-        }
-
-        function safeBtoa(str) {
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-        }
-
-        async function publishToGithub() {
-            const repo = document.getElementById('gh-repo').value.trim();
-            const btn = document.getElementById('publish-btn');
-
-            if(!repo || !repo.includes('/')) {
-                showToast("⚠️ Introduce tu repositorio (ejemplo: usuario/mi-web)");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = `<span>Publicando...</span>`;
-
-            try {
-                const url = `https://api.github.com/repos/${repo}/contents/stock.json`;
-                
-                const getResponse = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${MASTER_TOKEN}` }
-                });
-
-                let sha = null;
-                if(getResponse.ok) {
-                    const fileData = await getResponse.json();
-                    sha = fileData.sha;
-                }
-
-                const jsonStr = JSON.stringify(stockData, null, 2);
-                const content = safeBtoa(jsonStr);
-
-                const putResponse = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${MASTER_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: "Actualización automática de Almanaque",
-                        content: content,
-                        sha: sha || undefined
-                    })
-                });
-
-                if(putResponse.ok) {
-                    showToast("✅ ¡Publicado con éxito!");
-                    document.getElementById('repo-status').textContent = "Última sincronización: Hace un momento";
-                } else {
-                    const err = await putResponse.json();
-                    showToast(`❌ Error: ${err.message}`);
-                }
-            } catch (e) {
-                showToast("❌ Error de red.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<span>Publicar Cambios</span>`;
-            }
-        }
-
-        function toggleAdmin() {
-            const panel = document.getElementById('admin-panel');
-            const isVisible = panel.style.display === 'grid';
-            panel.style.display = isVisible ? 'none' : 'grid';
-            if (isVisible) renderPublicContent(); else renderAdminContent();
-        }
-
-        function handleFile(event, index) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    stockData.meses[index].img = e.target.result;
-                    renderAdminContent();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function renderAdminContent() {
-            const grid = document.getElementById('admin-grid');
-            grid.innerHTML = '';
-            stockData.meses.forEach((mes, i) => {
-                const card = document.createElement('div');
-                card.className = 'bg-white p-6 rounded-3xl border border-gray-100 flex flex-col shadow-sm';
-                card.innerHTML = `
-                    <div class="flex justify-between items-center mb-5">
-                        <span class="text-rose-400 font-bold text-[10px] uppercase tracking-widest">${mes.nombre}</span>
-                        <span class="text-gray-300 text-[9px] uppercase tracking-tighter">${mes.receta}</span>
-                    </div>
-                    <div onclick="document.getElementById('in-${i}').click()" class="drop-zone mb-6 group relative">
-                        ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : iconPlaceholder}
-                    </div>
-                    <input type="file" id="in-${i}" class="hidden" accept="image/*" onchange="handleFile(event, ${i})">
-                    <p class="text-[11px] text-gray-400 italic leading-relaxed border-l border-rose-100 pl-4">${mes.cita}</p>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function renderPublicContent() {
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-            stockData.meses.forEach((mes, i) => {
-                const card = document.createElement('div');
-                card.className = 'public-card opacity-0 transform translate-y-12 transition-all duration-700';
-                card.innerHTML = `
-                    <div class="aspect-[4/5] mb-12 overflow-hidden bg-stone-50 flex items-center justify-center relative shadow-2xl">
-                        ${mes.img ? `<img src="${mes.img}" class="w-full h-full object-cover">` : `<div class="opacity-10">${iconPlaceholder}</div>`}
-                    </div>
-                    <div class="text-center">
-                        <span class="text-rose-400 font-bold text-[10px] uppercase tracking-[0.6em] mb-6 block">${mes.receta}</span>
-                        <h3 class="text-4xl font-serif italic mb-8 text-gray-800">${mes.nombre}</h3>
-                        <p class="text-[13px] text-gray-400 italic leading-relaxed font-serif px-2">"${mes.cita}"</p>
-                    </div>
-                `;
-                grid.appendChild(card);
-                setTimeout(() => { card.style.opacity = "1"; card.style.transform = "translateY(0)"; }, i * 80);
-            });
-        }
-
-        function enterApp() {
-            const hero = document.getElementById('hero-screen');
-            const main = document.getElementById('main-content');
-            hero.classList.add('fade-out');
-            setTimeout(() => {
-                hero.classList.add('hidden');
-                main.classList.remove('hidden');
-                setTimeout(() => main.classList.remove('opacity-0'), 100);
-                renderPublicContent();
-            }, 1200);
-        }
-
-        function animateTitle() {
-            const text = "Como Agua para Chocolate";
-            const container = document.getElementById('animated-title');
-            text.split(' ').forEach((word, wordIdx) => {
-                const wordSpan = document.createElement('span');
-                wordSpan.className = 'inline-block mr-6';
-                word.split('').forEach((char, charIdx) => {
-                    const span = document.createElement('span');
-                    span.textContent = char;
-                    span.className = 'char';
-                    span.style.animationDelay = `${(wordIdx * 5 + charIdx) * 0.08}s`;
-                    wordSpan.appendChild(span);
-                });
-                container.appendChild(wordSpan);
-            });
-        }
-
-        function createPetals() {
-            const container = document.getElementById('global-petals');
-            for (let i = 0; i < 45; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'rose-petal';
-                const size = Math.random() * 14 + 10;
-                petal.style.width = size + 'px'; petal.style.height = size + 'px';
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.animationDuration = (Math.random() * 8 + 10) + 's';
-                petal.style.animationDelay = '-' + (Math.random() * 10) + 's';
-                container.appendChild(petal);
-            }
-        }
-
-        window.onload = () => { createPetals(); animateTitle(); };
+        window.onresize = drawConnections;
     </script>
 </body>
 </html>
