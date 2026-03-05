@@ -3,482 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizarra Policial: Caso Tuya - Investigación Avanzada</title>
+    <title>La Banda de los Millones | Sitio Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
         :root {
-            --cork: #2d1e16;
-            --color-crimen: #ef4444;
-            --color-pista: #3b82f6;
-            --color-secreto: #10b981;
-            --color-hipotesis: #f59e0b;
-            --color-amenaza: #a855f7;
-            --paper-old: #d4c4a8;
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background-color: var(--cork);
-            background-image: url('https://www.transparenttextures.com/patterns/cork-board.png');
-            font-family: 'Inter', sans-serif;
-        }
-        .police-font { font-family: 'Special Elite', cursive; }
-        
-        #board {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
+            --river-red: #ED1C24;
+            --river-white: #FFFFFF;
+            --river-dark: #0a0a0a;
+            --river-card-bg: rgba(15, 15, 15, 0.75); 
         }
 
-        .item {
-            position: absolute;
-            cursor: grab;
-            z-index: 20;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .item:active { cursor: grabbing; z-index: 100 !important; }
-        .item:hover { transform: scale(1.05) rotate(0deg) !important; z-index: 50; }
-
-        /* Tooltips */
-        .tooltip {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(4px);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            width: 200px;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
-            z-index: 60;
-        }
-        .item:hover .tooltip {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--river-dark);
+            color: var(--river-white);
+            overflow-x: hidden;
         }
 
-        /* Polaroid */
-        .polaroid {
-            background: #fff;
-            padding: 10px 10px 40px 10px;
-            box-shadow: 5px 10px 20px rgba(0,0,0,0.6);
-            width: 155px;
-            border: 1px solid #ddd;
-        }
-        .polaroid img {
-            width: 100%;
-            height: 110px;
-            object-fit: cover;
-            filter: grayscale(0.4) sepia(0.2);
-            pointer-events: none;
-        }
-        .polaroid .label {
-            font-family: 'Special Elite';
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 8px;
-            line-height: 1.2;
-            color: #000;
-        }
-
-        /* Notas Post-it */
-        .note {
-            background: #feff9c;
-            padding: 12px;
-            width: 195px;
-            box-shadow: 4px 6px 12px rgba(0,0,0,0.4);
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1.3;
-            color: #000;
-            border-bottom-right-radius: 40px 10px;
-        }
-        .note.blue { background: #b6e0ff; }
-        .note.pink { background: #ffc2cc; }
-        .note.green { background: #c2f0c1; }
-        .note.orange { background: #ffd8a8; }
-
-        /* Etiquetas de Evidencia */
-        .evidence-tag {
-            background: #ffffff;
-            border-left: 8px solid var(--color-crimen);
-            padding: 8px;
-            font-family: 'Special Elite';
-            font-size: 10px;
-            width: 160px;
-            box-shadow: 4px 6px 10px rgba(0,0,0,0.4);
-            color: #000;
-        }
-
-        /* MEJORA: Mapa Realista */
-        .map-container {
-            background-color: var(--paper-old);
-            background-image: 
-                url('https://www.transparenttextures.com/patterns/paper.png'),
-                linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02) 75%, transparent 75%, transparent);
-            background-size: auto, 4px 4px;
-            border: 12px solid #1a202c;
-            width: 480px;
-            height: 320px;
-            border-radius: 2px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 60px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-            border-image: url('https://www.transparenttextures.com/patterns/dark-matter.png') 30 stretch;
-        }
-
-        .map-blueprint {
-            position: absolute;
-            inset: 15px;
-            border: 1px solid rgba(0,0,0,0.15);
-            background-image: 
-                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        .map-urban-shape {
-            position: absolute;
-            background: rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.2);
-        }
-
-        .street-label {
-            position: absolute;
-            font-size: 8px;
+        h1, h2, h3, h4, .oswald {
+            font-family: 'Oswald', sans-serif;
             text-transform: uppercase;
-            color: rgba(0,0,0,0.4);
-            font-weight: 800;
-            letter-spacing: 1px;
         }
 
-        .map-ink-note {
-            position: absolute;
-            font-family: 'Special Elite';
-            font-size: 9px;
-            color: #444;
-            transform: rotate(-5deg);
-            border-bottom: 1px solid rgba(0,0,0,0.2);
+        /* Fondo fijo original */
+        .fixed-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(10,10,10,0.9) 100%), 
+                url('https://cdn.discordapp.com/attachments/1479227367418499162/1479229516823134370/image.png?ex=69ab4757&is=69a9f5d7&hm=80ca1742fbd1b38d7f93912ab31efabbd6a2f6fed83260837cf57284243baf64&');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: brightness(0.6) contrast(1.1);
         }
 
-        .location-dot {
-            width: 14px; height: 14px;
-            background: #b91c1c;
-            border: 2px solid white;
-            border-radius: 50%;
-            position: absolute;
-            z-index: 50;
-            box-shadow: 0 0 10px rgba(185, 28, 28, 0.5);
-            cursor: pointer;
+        .text-glow {
+            text-shadow: 0 0 30px rgba(237, 28, 36, 0.8), 0 0 10px rgba(0,0,0,1);
         }
-        
-        .location-dot::after {
+
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Sistema de Tabs */
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .tab-btn.active {
+            opacity: 1;
+            color: var(--river-red);
+        }
+
+        .tab-btn.active::after {
             content: '';
             position: absolute;
-            inset: -4px;
-            border: 1px solid #b91c1c;
-            border-radius: 50%;
-            animation: pulse-ring 2s infinite;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--river-red);
+            box-shadow: 0 0 10px var(--river-red);
         }
 
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(2.5); opacity: 0; }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
         }
 
-        /* Hilos Animados */
-        .animated-thread {
-            stroke-dasharray: 8;
-            animation: flow 30s linear infinite;
-            filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
-        }
-        @keyframes flow { to { stroke-dashoffset: -200; } }
-
-        #thread-layer {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 5;
+        .content-section.active {
+            display: block;
         }
 
-        .pin {
-            width: 14px; height: 14px;
-            background: radial-gradient(circle at 30% 30%, #ff4d4d, #8b0000);
-            border-radius: 50%;
-            position: absolute; top: -7px; left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.5);
-            z-index: 55;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .footer {
-            position: fixed; bottom: 0;
-            width: 100%; height: 50px;
-            background: #0e0e0e;
-            border-top: 4px solid #b91c1c;
-            display: flex; align-items: center;
-            padding: 0 30px; justify-content: space-between;
-            z-index: 1000;
+        /* ESTILO UNIFICADO */
+        .member-photo {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover; 
+            border: 2px solid var(--river-red); 
+            box-shadow: 0 0 20px rgba(237, 28, 36, 0.3); 
+            transition: all 0.4s ease;
+            display: block;
         }
 
-        .legend {
+        .group:hover .member-photo {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(237, 28, 36, 0.6); 
+            border-color: white;
+        }
+        
+        .photo-container {
+            width: 100%;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .river-card {
+            background: var(--river-card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .river-card:hover {
+            border-color: var(--river-red);
+            background: rgba(40, 0, 0, 0.5);
+        }
+
+        .rule-number {
+            background: var(--river-red);
+            color: white;
+            width: 35px;
+            height: 35px;
             display: flex;
-            gap: 15px;
-            font-size: 9px;
-            color: #aaa;
-            font-family: 'Special Elite';
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .nav-logo-img {
+            height: 55px;
+            mix-blend-mode: screen;
+        }
+
+        /* Miembro del mes glow */
+        .winner-glow {
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            border: 2px solid #ffd700;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-    <div id="board">
-        <svg id="thread-layer">
-            <g id="connections"></g>
-        </svg>
+    <div class="fixed-bg"></div>
 
-        <!-- TITULO -->
-        <div class="absolute top-4 left-0 w-full text-center z-0">
-            <h1 class="police-font text-3xl text-red-600 font-black tracking-[8px] opacity-80">ANÁLISIS LITERARIO: CASO TUYA</h1>
-            <p class="police-font text-white/50 text-xs mt-1">Expediente #942 - Conexiones, Silencios y Posesión</p>
+    <!-- NAVEGACIÓN -->
+    <nav class="fixed w-full z-50 bg-black/90 border-b border-red-700/30 px-6 py-3 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="https://cdn.discordapp.com/attachments/1442205499645759621/1479240899883045068/86bb6d3a0f8d986eb3320b8436f65885.png?ex=69ab51f1&is=69aa0071&hm=c3aca8c4e76732a0063fe99e834dd564a0a41b926ad3bab7642c0287c5fd60a7&" alt="Logo" class="nav-logo-img">
+                <span class="text-xl font-bold oswald tracking-tighter hidden sm:block">LA BANDA <span class="text-red-600">DE LOS MILLONES</span></span>
+            </div>
+            
+            <div class="flex items-center gap-8">
+                <button onclick="switchTab('inicio')" id="btn-inicio" class="tab-btn active oswald font-bold tracking-widest text-sm">INICIO</button>
+                <button onclick="switchTab('mafia')" id="btn-mafia" class="tab-btn oswald font-bold tracking-widest text-sm text-white">MAFILIA</button>
+                <a href="https://discord.gg/P5QVf3NH" target="_blank" class="bg-red-600 px-4 py-2 rounded text-xs font-bold hover:bg-white hover:text-red-600 transition uppercase text-white">Discord</a>
+            </div>
         </div>
+    </nav>
 
-        <!-- EJE CENTRAL: MAPA MEJORADO -->
-        <div id="map-section" class="item" style="top: 25%; left: 32%;">
-            <div class="map-container">
-                <div class="pin"></div>
-                <div class="map-blueprint">
-                    <!-- Formas urbanas ficticias para realismo -->
-                    <div class="map-urban-shape" style="top: 20%; left: 10%; width: 60px; height: 100px;"></div>
-                    <div class="map-urban-shape" style="top: 15%; left: 60%; width: 120px; height: 40px;"></div>
-                    <div class="map-urban-shape" style="top: 55%; left: 40%; width: 80px; height: 80px;"></div>
-                    <div class="map-urban-shape" style="top: 70%; left: 15%; width: 40px; height: 50px;"></div>
-                    
-                    <!-- Etiquetas de calles -->
-                    <div class="street-label" style="top: 45%; left: 15%; transform: rotate(-90deg);">Av. Santa Fe</div>
-                    <div class="street-label" style="top: 35%; left: 55%;">Calle Libertad</div>
-                    <div class="street-label" style="top: 85%; left: 45%;">Parque Central</div>
-
-                    <!-- Notas de investigador -->
-                    <div class="map-ink-note" style="top: 10%; right: 20%;">Área de escape</div>
-                    <div class="map-ink-note" style="bottom: 15%; left: 5%;">¿Visto por última vez?</div>
-                    
-                    <!-- Puntos de Interés -->
-                    <div class="location-dot" style="top: 30%; left: 65%;" title="Casa Alicia"></div>
-                    <div class="location-dot" style="top: 65%; left: 35%;" title="Lugar del Incidente"></div>
-                    <div class="location-dot" style="top: 85%; left: 75%;" title="Consultorio Médico"></div>
+    <!-- SECCIÓN INICIO -->
+    <main id="section-inicio" class="content-section active pt-48 pb-20 px-6">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="mb-6 inline-block bg-red-600 text-white px-4 py-1 rounded-sm text-xs font-bold tracking-[0.2em] uppercase shadow-lg shadow-red-600/40">
+                Sitio Oficial de la Familia
+            </div>
+            <h1 class="text-6xl md:text-9xl font-black mb-8 oswald italic leading-tight text-glow text-white">
+                EL CORAZÓN DE <br><span class="text-red-600">NUESTRA SEDE</span>
+            </h1>
+            <p class="text-xl md:text-3xl mb-12 font-bold max-w-2xl mx-auto text-white drop-shadow-[0_4px_8px_rgba(0,0,0,1)] italic">
+                "Vivir y morir en el Monumental. La jerarquía se respeta o se impone."
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mt-20">
+                <div class="glass-panel p-8 rounded-xl border-l-4 border-red-600">
+                    <i class="fas fa-users text-red-600 text-3xl mb-4"></i>
+                    <h3 class="oswald text-xl font-bold mb-2">Comunidad</h3>
+                    <p class="text-gray-400 text-sm italic">Más de 50 miembros activos operando bajo un mismo ideal.</p>
                 </div>
-
-                <div class="absolute bottom-0 w-full bg-slate-900/90 text-white p-2 police-font text-[10px] flex justify-between backdrop-blur-sm">
-                    <span>CARTOGRAFÍA DEL CRIMEN - SECTOR 7</span>
-                    <span class="bg-red-700 px-2 uppercase font-bold text-[9px] tracking-tighter">CONFIDENCIAL</span>
+                <div class="glass-panel p-8 rounded-xl border-l-4 border-red-600">
+                    <i class="fas fa-shield-alt text-red-600 text-3xl mb-4"></i>
+                    <h3 class="oswald text-xl font-bold mb-2">Seguridad</h3>
+                    <p class="text-gray-400 text-sm italic">Protegemos nuestro territorio y a nuestra gente sin dudar.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-xl border-l-4 border-red-600">
+                    <i class="fas fa-crown text-red-600 text-3xl mb-4"></i>
+                    <h3 class="oswald text-xl font-bold mb-2">Respeto</h3>
+                    <p class="text-gray-400 text-sm italic">La jerarquía se gana con sangre y se mantiene con honor.</p>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- PERSONAJES PRINCIPALES -->
-        <div id="ines" class="item polaroid" style="top: 8%; left: 4%; transform: rotate(-2deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400" alt="Inés">
-            <div class="label">INÉS PEREYRA<br><span class="text-red-600 text-[9px]">DISEÑADORA DEL PLAN</span></div>
-            <div class="tooltip">limpia el crimen para mantener su familia perfecta.</div>
+    <!-- SECCIÓN MAFILIA -->
+    <main id="section-mafia" class="content-section pt-40 pb-20 px-6">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- MIEMBRO DEL MES AL PRINCIPIO DE MAFILIA -->
+            <div class="mb-20 text-center">
+                <div class="inline-block glass-panel p-8 rounded-2xl winner-glow animate-pulse">
+                    <p class="text-yellow-500 font-bold oswald tracking-[0.4em] text-sm mb-4">⭐ MIEMBRO DEL MES ⭐</p>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-500 shadow-[0_0_20px_rgba(255,215,0,0.5)]">
+                            <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479232889659855083/image-52.png?ex=69ab4a7b&is=69a9f8fb&hm=925711e36181527885aaafd49238b94fb5c3f7be250beef909c1e42edaf8b5b8&" alt="Miembro del mes" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h3 class="oswald text-4xl font-black text-white italic">NAHU</h3>
+                            <p class="text-yellow-500 text-sm font-bold uppercase tracking-widest mb-2">Excelencia y Lealtad</p>
+                            <p class="text-gray-400 text-sm italic max-w-xs">"Su compromiso con la banda y su desempeño en cada operativo lo posicionan en lo más alto este mes."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGLAS -->
+            <div class="mb-32 glass-panel p-10 md:p-16 rounded-2xl">
+                <div class="text-center mb-16">
+                    <h2 class="text-5xl font-bold mb-4 oswald italic uppercase text-white">REGLAS <span class="text-red-600">OFICIALES</span></h2>
+                    <p class="text-gray-400 uppercase tracking-widest text-xs">📜 Código de conducta de la Mafilia</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">1</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic">No al Anti-Rol</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">Prohibido el Anti-Rol con la indumentaria de la banda. Todo lo que hagas afecta nuestra imagen colectiva.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl border-red-600/50 bg-red-950/20 shadow-lg shadow-red-900/20">
+                        <div class="rule-number mb-6">2</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Indumentaria</h3>
+                        <p class="text-gray-100 text-sm italic font-bold uppercase">A partir de las 21:45hs hasta las 6:00hs es OBLIGATORIO tener la casaca en sede.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">3</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Asistencia</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">La participación en eventos y llamados de la jerarquía es fundamental para el crecimiento.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">4</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Respeto Mutuo</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">El respeto a los rangos superiores y compañeros es la base de nuestra estructura.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">5</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Canal de Radio</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">Mantener el orden en la radio. Solo información relevante para el operativo.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">6</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Conflictos</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">Cualquier conflicto interno se resuelve en privado con la administración.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">7</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Vehículos</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">Los vehículos de la banda deben estar siempre en condiciones y bien estacionados.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl border-red-600">
+                        <div class="rule-number mb-6">8</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Lealtad</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">La traición o jugar doble rol significará la expulsión inmediata y definitiva.</p>
+                    </div>
+                    <div class="river-card p-8 rounded-xl">
+                        <div class="rule-number mb-6">9</div>
+                        <h3 class="text-xl font-bold mb-4 text-red-500 oswald italic font-bold">Confidencialidad</h3>
+                        <p class="text-gray-300 text-sm italic font-bold">Lo que pasa en la sede, se queda en la sede. No filtrar planes externos.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JERARQUÍA -->
+            <div class="glass-panel p-10 md:p-20 rounded-2xl">
+                <div class="text-center mb-16">
+                    <p class="text-red-600 font-bold tracking-[0.5em] mb-4 uppercase">🚨 ANUNCIO OFICIAL 🚨</p>
+                    <h2 class="text-5xl md:text-7xl font-black oswald italic uppercase leading-none text-glow text-white">JERARQUÍA DE <span class="text-red-600">LA MAFIA</span></h2>
+                    <p class="mt-6 text-gray-400 italic">"La cadena de mando se respeta sin excepción"</p>
+                </div>
+
+                <!-- Jefes -->
+                <div class="mb-24">
+                    <div class="flex items-center justify-center gap-4 mb-12">
+                        <div class="h-px w-12 bg-red-600"></div>
+                        <h3 class="text-2xl font-bold oswald tracking-[0.3em] text-red-600">🔱 JEFES ABSOLUTOS 🔱</h3>
+                        <div class="h-px w-12 bg-red-600"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-2xl mx-auto">
+                        <div class="text-center group">
+                            <div class="photo-container bg-zinc-900 shadow-2xl rounded-sm mb-4">
+                                <img src="https://media.discordapp.net/attachments/1433629959976517724/1459644508894396477/content.png?ex=69ab3861&is=69a9e6e1&hm=a1811ef753e18d169fea4d32727b012df865a70a61f31156c44fd30bbd4bdcfd&=&format=webp&quality=lossless&width=1374&height=916" class="member-photo">
+                            </div>
+                            <h4 class="text-3xl font-black oswald italic text-white">ALEXIS</h4>
+                            <p class="text-xs text-red-500 font-bold tracking-widest mt-1 uppercase">Máxima Autoridad</p>
+                        </div>
+                        <div class="text-center group">
+                            <div class="photo-container bg-zinc-900 shadow-2xl rounded-sm mb-4">
+                                <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479237031468208209/image.png?ex=69ab4e57&is=69a9fcd7&hm=5be3988a12f85adb7b8d2852d136fb9fa6e849b31ba2419688c46259ba40d994&" class="member-photo">
+                            </div>
+                            <h4 class="text-3xl font-black oswald italic text-white">GUSTAVO</h4>
+                            <p class="text-xs text-red-500 font-bold tracking-widest mt-1 uppercase">Máxima Autoridad</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CEO -->
+                <div class="mb-24 text-center">
+                    <h3 class="text-xl font-bold oswald tracking-[0.3em] text-white mb-10">💼 2. CEO 💼</h3>
+                    <div class="max-w-xs mx-auto group">
+                        <div class="photo-container bg-zinc-900 shadow-2xl rounded-sm mb-4 relative">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Laucha" class="member-photo">
+                            <div class="absolute bottom-0 left-0 w-full bg-red-600 py-1 text-[10px] font-black uppercase tracking-widest text-white">Laucha</div>
+                        </div>
+                        <p class="text-xs text-gray-400 tracking-widest uppercase italic">Coordinación General</p>
+                    </div>
+                </div>
+
+                <!-- SubJefes y Admin -->
+                <div class="grid md:grid-cols-2 gap-16 mb-24">
+                    <!-- SubJefes -->
+                    <div>
+                        <h3 class="text-center text-lg font-bold oswald tracking-[0.3em] text-red-500 mb-8 italic">🎖️ 3. SUBJEFES 🎖️</h3>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2">
+                                    <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479236049933959258/image.png?ex=69ab4d6d&is=69a9fbed&hm=11b75115d0b5c6535e557f5a4bb9c1967c27f4135adb66c5fbfc5cc1b48127d6&" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-white">MATECITO</p>
+                            </div>
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=pela" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-white">PELA</p>
+                            </div>
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2 border-2 border-yellow-500">
+                                    <img src="https://media.discordapp.net/attachments/1471114881255215174/1479232889659855083/image-52.png?ex=69ab4a7b&is=69a9f8fb&hm=925711e36181527885aaafd49238b94fb5c3f7be250beef909c1e42edaf8b5b8&=&format=webp&quality=lossless&width=1374&height=907" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-yellow-500">NAHU</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Admins -->
+                    <div>
+                        <h3 class="text-center text-lg font-bold oswald tracking-[0.3em] text-blue-500 mb-8 italic">🛡️ 4. ADMINS 🛡️</h3>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=cafecito" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-white">CAFECITO</p>
+                            </div>
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2">
+                                    <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479237152696041543/file_00000000e528720eb53dd9ee875518ed2.png?ex=69ab4e74&is=69a9fcf4&hm=fdb85c82cf055e67bed23982bb3f2291829d7dc330a1b8466b9f97260498bb81&" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-white">COLO</p>
+                            </div>
+                            <div class="text-center group">
+                                <div class="photo-container bg-zinc-900 rounded mb-2">
+                                    <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479237435664634096/image.png?ex=69ab4eb7&is=69a9fd37&hm=151ae34b51d951124d925fcf5e9a7930cdbe33af43c329af911f9c314cc377c1&" class="member-photo">
+                                </div>
+                                <p class="oswald text-xs font-bold text-white">SUTRA</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mods -->
+                <div class="mb-24">
+                    <h3 class="text-center text-lg font-bold oswald tracking-[0.3em] text-green-500 mb-8 italic">⚔️ 5. MODS ⚔️</h3>
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <div class="text-center w-24 group">
+                            <div class="photo-container bg-zinc-900 rounded-full mb-2">
+                                <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479235779052962005/image.png?ex=69ab4d2c&is=69a9fbac&hm=4dac5f150377b3f5d4ddc0add0ce148e912e1a354bbd7e317ec8149a5bfa1b89&" class="member-photo rounded-full">
+                            </div>
+                            <p class="oswald text-[10px] font-bold text-white">MILA</p>
+                        </div>
+                        <div class="text-center w-24 group">
+                            <div class="photo-container bg-zinc-900 rounded-full mb-2">
+                                <img src="https://cdn.discordapp.com/attachments/1471114881255215174/1479238275515285575/image.png?ex=69ab4f7f&is=69a9fdff&hm=789a960792dacc52fd364c062f7ba5b11deabf787a78e95f4a1bb15b1813543d&" class="member-photo rounded-full">
+                            </div>
+                            <p class="oswald text-[10px] font-bold text-white">RETIRED</p>
+                        </div>
+                        <div class="text-center w-24 group">
+                            <div class="photo-container bg-zinc-900 rounded-full mb-2">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=colo2" class="member-photo rounded-full">
+                            </div>
+                            <p class="oswald text-[10px] font-bold text-white">COLO</p>
+                        </div>
+                        <div class="text-center w-24 group">
+                            <div class="photo-container bg-zinc-900 rounded-full mb-2">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=marquitos" class="member-photo rounded-full">
+                            </div>
+                            <p class="oswald text-[10px] font-bold text-white">MARQUITOS</p>
+                        </div>
+                        <div class="text-center w-24 group">
+                            <div class="photo-container bg-zinc-900 rounded-full mb-2">
+                                <img src="https://media.discordapp.net/attachments/1471114881255215174/1479233529773690933/972FA8A4-6CB0-42DC-93B7-ACA0EEB9136E.png?ex=69ab4b14&is=69a9f994&hm=3b451882ee5c3c2b04fd0258f77a1608f0f77e665a024858ac56e04503484d41&=&format=webp&quality=lossless&width=644&height=966" class="member-photo rounded-full">
+                            </div>
+                            <p class="oswald text-[10px] font-bold text-white">ALEXITO</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer de sección -->
+                <div class="max-w-3xl mx-auto bg-black/80 p-8 border border-red-600/30 text-center rounded-xl shadow-2xl">
+                    <p class="text-red-500 font-bold mb-4 oswald tracking-widest">📌 COMPROMISO DE LA BANDA</p>
+                    <ul class="text-gray-300 text-sm space-y-3 italic">
+                        <li>La lealtad no se negocia: se vive.</li>
+                        <li>Representamos una familia, no un grupo.</li>
+                        <li>Cuidamos la imagen y el respeto mutuo ante todo.</li>
+                    </ul>
+                    <div class="mt-8 pt-8 border-t border-white/10">
+                        <p class="text-white font-black oswald italic text-lg tracking-widest uppercase">
+                            <i class="fas fa-fire text-red-600 mr-2"></i>
+                            Vivir y morir en el monumental
+                            <i class="fas fa-fire text-red-600 ml-2"></i>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div id="ernesto" class="item polaroid" style="top: 8%; left: 21%; transform: rotate(1deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400" alt="Ernesto">
-            <div class="label">ERNESTO<br><span class="text-blue-600 text-[9px]">EL ASESINO</span></div>
-            <div class="tooltip">Se deja arrastrar por el plan de Inés para evitar la cárcel. Cobarde por naturaleza.</div>
-        </div>
-
-        <div id="alicia" class="item polaroid" style="top: 8%; right: 21%; transform: rotate(2deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400" alt="Alicia">
-            <div class="label">ALICIA<br><span class="text-gray-500 text-[9px]">EL OBJETO "TUYA"</span></div>
-            <div class="tooltip">Su muerte es el motor que desnuda la hipocresía familiar. Representaba la libertad de Ernesto.</div>
-        </div>
-
-        <div id="charo" class="item polaroid" style="top: 8%; right: 4%; transform: rotate(-2deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400" alt="Charo">
-            <div class="label">CHARO<br><span class="text-purple-600 text-[9px]">LA AMENAZA REAL</span></div>
-            <div class="tooltip">Investiga por su cuenta. pidiendo justicia.</div>
-        </div>
-
-        <!-- PERSONAJES SECUNDARIOS -->
-        <div id="lali" class="item polaroid" style="bottom: 12%; left: 28%; transform: rotate(-1deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" alt="Lali">
-            <div class="label">LALI PEREYRA<br><span class="text-green-700 text-[9px]">VÍCTIMA INVISIBLE</span></div>
-            <div class="tooltip">Su soledad es la prueba del fracaso del hogar Pereyra.</div>
-        </div>
-
-        <div id="medico" class="item polaroid" style="bottom: 12%; left: 45%; transform: rotate(2deg);">
-            <div class="pin"></div>
-            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400" alt="Médico">
-            <div class="label">guillermo<br><span class="text-green-500 text-[9px]">EL DESCONOCIDO</span></div>
-            <div class="tooltip"></div>
-        </div>
-
-        <!-- NUEVAS NOTAS SOBRE EL TRIÁNGULO -->
-        <div id="h_triangulo" class="item note orange" style="top: 35%; left: 4%; transform: rotate(2deg);">
-            <p class="police-font text-red-900 font-bold mb-1 text-[10px]">POSESIÓN Y CONTROL</p>
-            <p>Inés ve a Ernesto y su familia como algo perfecto,ocultar la muerte lo ve como una salida para evitar daños</p>
-        </div>
-
-        <div id="h_ernesto_alicia" class="item note blue" style="top: 35%; left: 20%; transform: rotate(-1deg);">
-            <p class="police-font text-blue-900 font-bold mb-1 text-[10px]">ERNESTO: EL MUJERIEGO</p>
-            <p>Ernesto no amaba a ninguna, solo le daba placer la infidelidad.</p>
-        </div>
-
-        <!-- HIPÓTESIS ORIGINALES -->
-        <div id="h1" class="item note orange" style="top: 35%; right: 4%; transform: rotate(3deg);">
-            <p class="police-font text-purple-900 font-bold mb-1 text-[10px]">HIPÓTESIS: CHARO VS INÉS</p>
-            <p>Charo es el antagonista moral. Mientras Inés destruye evidencia, Charo busca hacer justicia por su tia.</p>
-        </div>
-
-
-        <div id="h3" class="item note green" style="bottom: 12%; left: 5%; transform: rotate(-2deg);">
-            <p class="police-font text-green-900 font-bold mb-1 text-[10px]">GUILLERMO</p>
-            <p>guillermo represento la persona que Lali no tiene en casa. Subraya el aislamiento afectivo.</p>
-        </div>
-
-        <!-- EVIDENCIAS -->
-        <div id="ev1" class="item evidence-tag" style="top: 55%; left: 4%; transform: rotate(-1deg);">
-            <p class="font-bold border-b border-black/20 mb-1 uppercase text-red-700 text-[8px]">EVIDENCIA</p>
-            <p class="font-bold">CARTA "TUYA"</p>
-            <p class="italic text-[9px]">El fetiche de la exclusividad.</p>
-        </div>
-
-        <div id="ev2" class="item evidence-tag" style="top: 70%; left: 4%; transform: rotate(2deg);">
-            <p class="font-bold border-b border-black/20 mb-1 uppercase text-red-700 text-[8px]">EVIDENCIA</p>
-            <p class="font-bold">EL ENCENDEDOR</p>
-            <p class="italic text-[9px]">Olvidado en el lugar del crimen.</p>
-        </div>
-
-        <div id="ev3" class="item evidence-tag" style="top: 55%; left: 20%; transform: rotate(-2deg);">
-            <p class="font-bold border-b border-black/20 mb-1 uppercase text-blue-700 text-[8px]">EVIDENCIA</p>
-            <p class="font-bold">Cajon de la oficina de Ernesto</p>
-            <p class="italic text-[9px]">llaves y llamadas en determinado lugar ( avellaneda 345 ).</p>
-        </div>
-
-        <!-- ANÁLISIS FINAL -->
-        <div id="n_final" class="item note pink" style="bottom: 12%; right: 5%; transform: rotate(1deg);">
-            <p class="police-font text-red-800 font-bold mb-1 text-[10px]">CONCLUSIÓN NEGRA</p>
-            <p>En el mundo de Piñeiro, la verdad no libera; la verdad es una moneda de cambio para el poder doméstico.</p>
-        </div>
-
-    </div>
+    </main>
 
     <!-- FOOTER -->
-    <div class="footer">
-        <div class="text-white police-font text-lg font-bold tracking-widest flex items-center gap-3">
-            <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
-            PIZARRA: INVESTIGACIÓN COMPLETA
-        </div>
-        <div class="legend">
-            <div class="flex items-center"><span class="w-3 h-0.5 bg-red-600 mr-1"></span> TRIÁNGULO</div>
-            <div class="flex items-center"><span class="w-3 h-0.5 bg-purple-500 mr-1"></span> AMENAZA/CHARO</div>
-            <div class="flex items-center"><span class="w-3 h-0.5 bg-green-500 mr-1"></span> SECRETO/LALI</div>
-            <div class="flex items-center"><span class="w-3 h-0.5 bg-orange-400 mr-1"></span> HIPÓTESIS</div>
-        </div>
-    </div>
+    <footer class="bg-black/95 py-20 border-t border-red-900/40 text-center backdrop-blur-sm relative z-10">
+        <h2 class="text-5xl font-bold mb-8 oswald italic uppercase text-white">Entrar a la <span class="text-red-600">Mafilia</span></h2>
+        <a href="https://discord.gg/P5QVf3NH" target="_blank" class="bg-red-600 hover:bg-white hover:text-red-600 text-white px-14 py-6 rounded-sm font-black text-2xl inline-flex items-center gap-4 transition-all uppercase oswald shadow-2xl">
+            <i class="fab fa-discord text-3xl"></i>
+            Discord Oficial
+        </a>
+        <p class="mt-12 text-gray-500 text-[10px] tracking-[5px] font-bold uppercase">La Banda de los Millones • @Mafilia</p>
+    </footer>
 
     <script>
-        const connectionsContainer = document.getElementById('connections');
-        const board = document.getElementById('board');
-        let activeItem = null;
-        let offset = { x: 0, y: 0 };
-
-        const links = [
-            { from: 'ines', to: 'ernesto', color: '#ef4444' },
-            { from: 'ernesto', to: 'alicia', color: '#3b82f6' },
-            { from: 'ines', to: 'alicia', color: '#ef4444' },
-            { from: 'ines', to: 'h_triangulo', color: '#fb923c' },
-            { from: 'ernesto', to: 'h_ernesto_alicia', color: '#fb923c' },
-            { from: 'ernesto', to: 'ev3', color: '#3b82f6' },
-            { from: 'alicia', to: 'charo', color: '#a855f7' },
-            { from: 'charo', to: 'h1', color: '#fb923c' },
-            { from: 'charo', to: 'h2', color: '#fb923c' },
-            { from: 'h2', to: 'ev2', color: '#a855f7' },
-            { from: 'lali', to: 'ines', color: '#10b981' },
-            { from: 'lali', to: 'medico', color: '#10b981' },
-            { from: 'medico', to: 'h3', color: '#fb923c' },
-            { from: 'map-section', to: 'ernesto', color: '#666' },
-            { from: 'h1', to: 'ines', color: '#a855f7' }
-        ];
-
-        function drawConnections() {
-            connectionsContainer.innerHTML = '';
-            links.forEach(({from, to, color}) => {
-                const el1 = document.getElementById(from);
-                const el2 = document.getElementById(to);
-                if (el1 && el2) {
-                    const r1 = el1.getBoundingClientRect();
-                    const r2 = el2.getBoundingClientRect();
-                    const x1 = r1.left + r1.width/2;
-                    const y1 = r1.top + r1.height/2;
-                    const x2 = r2.left + r2.width/2;
-                    const y2 = r2.top + r2.height/2;
-
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-                    line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-                    line.setAttribute("stroke", color);
-                    line.setAttribute("stroke-width", "2");
-                    line.setAttribute("class", "animated-thread");
-                    connectionsContainer.appendChild(line);
-                }
+        function switchTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
             });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById('section-' + tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        document.addEventListener('mousedown', e => {
-            const item = e.target.closest('.item');
-            if (item) {
-                activeItem = item;
-                const rect = item.getBoundingClientRect();
-                offset.x = e.clientX - rect.left;
-                offset.y = e.clientY - rect.top;
-                item.style.zIndex = 1000;
-                item.style.transition = 'none';
-            }
-        });
-
-        document.addEventListener('mousemove', e => {
-            if (!activeItem) return;
-            activeItem.style.left = (e.clientX - offset.x) + 'px';
-            activeItem.style.top = (e.clientY - offset.y) + 'px';
-            drawConnections();
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (activeItem) {
-                activeItem.style.zIndex = 20;
-                activeItem.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                activeItem = null;
-            }
-        });
-
-        window.onload = () => {
-            drawConnections();
-            setTimeout(drawConnections, 100);
-        };
-        window.onresize = drawConnections;
     </script>
+
 </body>
-</html>
-
-
-
+</html> 
